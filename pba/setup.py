@@ -19,33 +19,13 @@ def create_parser(state):
         default='wrn',
         choices=('wrn_28_10', 'wrn_40_2', 'shake_shake_32', 'shake_shake_96',
                  'shake_shake_112', 'pyramid_net', 'resnet'))
-    parser.add_argument(
-        '--data_path',
-        default='/tmp/datasets/',
-        help='Directory where dataset is located.')
-    parser.add_argument(
-        '--dataset',
-        default='cifar10',
-        choices=('cifar10', 'cifar100', 'svhn', 'svhn-full', 'test'))
-    parser.add_argument(
-        '--recompute_dset_stats',
-        action='store_true',
-        help='Instead of using hardcoded mean/std, recompute from dataset.')
     parser.add_argument('--local_dir', type=str, default='/tmp/ray_results/',  help='Ray directory.')
     parser.add_argument('--restore', type=str, default=None, help='If specified, tries to restore from given path.')
-    parser.add_argument('--train_size', type=int, default=5000, help='Number of training examples.')
-    parser.add_argument('--val_size', type=int, default=45000, help='Number of validation examples.')
     parser.add_argument('--checkpoint_freq', type=int, default=50, help='Checkpoint frequency.')
     parser.add_argument(
         '--cpu', type=float, default=4, help='Allocated by Ray')
     parser.add_argument(
         '--gpu', type=float, default=1, help='Allocated by Ray')
-    parser.add_argument(
-        '--aug_policy',
-        type=str,
-        default='cifar10',
-        help=
-        'which augmentation policy to use (in augmentation_transforms_hp.py)')
     # search-use only
     parser.add_argument(
         '--explore',
@@ -61,8 +41,8 @@ def create_parser(state):
         '--no_cutout', action='store_true', help='turn off cutout')
     parser.add_argument('--lr', type=float, default=0.1, help='learning rate')
     parser.add_argument('--wd', type=float, default=0.0005, help='weight decay')
-    parser.add_argument('--bs', type=int, default=128, help='batch size')
-    parser.add_argument('--test_bs', type=int, default=25, help='test batch size')
+    parser.add_argument('--bs', type=int, default=512, help='batch size')
+    parser.add_argument('--test_bs', type=int, default=512, help='test batch size')
     parser.add_argument('--num_samples', type=int, default=1, help='Number of Ray samples')
 
     if state == 'train':
@@ -86,10 +66,6 @@ def create_parser(state):
             help=
             'no additional augmentation at all (besides cutout if not toggled)'
         )
-        parser.add_argument(
-            '--flatten',
-            action='store_true',
-            help='randomly select aug policy from schedule')
         parser.add_argument('--name', type=str, default='autoaug')
 
     elif state == 'search':
@@ -119,14 +95,10 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
     hparams = tf.contrib.training.HParams(
         train_size=FLAGS.train_size,
         validation_size=FLAGS.val_size,
-        dataset=FLAGS.dataset,
-        data_path=FLAGS.data_path,
         batch_size=FLAGS.bs,
         gradient_clipping_by_global_norm=5.0,
         explore=FLAGS.explore,
-        aug_policy=FLAGS.aug_policy,
         no_cutout=FLAGS.no_cutout,
-        recompute_dset_stats=FLAGS.recompute_dset_stats,
         lr=FLAGS.lr,
         weight_decay_rate=FLAGS.wd,
         test_batch_size=FLAGS.test_bs)
@@ -153,7 +125,6 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
                 parsed_policy = [int(p) for p in parsed_policy]
             hparams.add_hparam('hp_policy', parsed_policy)
             hparams.add_hparam('hp_policy_epochs', FLAGS.hp_policy_epochs)
-            hparams.add_hparam('flatten', FLAGS.flatten)
     elif state == 'search':
         hparams.add_hparam('no_aug', False)
         hparams.add_hparam('use_hp_policy', True)

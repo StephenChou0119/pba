@@ -23,40 +23,28 @@ import random
 import numpy as np
 from PIL import ImageOps, ImageEnhance, ImageFilter, Image
 
-MEANS = {
-    'cifar10_50000': [0.49139968, 0.48215841, 0.44653091],
-    'cifar10_4000': [0.49056774, 0.48116026, 0.44726052],
-    'cifar100_50000': [0.50707516, 0.48654887, 0.44091784],
-    'svhn_1000': [0.45163885, 0.4557915, 0.48093327],
-    'svhn-full_604388': [0.43090966, 0.4302428, 0.44634357]
-}
-STDS = {
-    'cifar10_50000': [0.24703223, 0.24348513, 0.26158784],
-    'cifar10_4000': [0.24710728, 0.24451308, 0.26235099],
-    'cifar100_50000': [0.26733429, 0.25643846, 0.27615047],
-    'svhn_1000': [0.20385217, 0.20957996, 0.20804394],
-    'svhn-full_604388': [0.19652855, 0.19832038, 0.19942076]
-}
 PARAMETER_MAX = 10  # What is the max 'level' a transform could be predicted
+dataset_mean = np.array([130.13, 112.82, 102.47])
+dataset_std = np.array([67.28, 64.61, 64.46])
 
 
-def pil_wrap(img, dataset):
+def pil_wrap(img):
     """Convert the `img` numpy tensor to a PIL Image."""
     return Image.fromarray(
         np.uint8(
-            (img * STDS[dataset] + MEANS[dataset]) * 255.0)).convert('RGBA')
+            (img * dataset_std + dataset_mean) * 255.0)).convert('RGBA')
 
 
-def pil_unwrap(pil_img, dataset, image_size):
+def pil_unwrap(pil_img, image_size):
     """Converts the PIL img to a numpy array."""
     pic_array = (np.array(pil_img.getdata()).reshape((image_size, image_size, 4)) / 255.0)
     i1, i2 = np.where(pic_array[:, :, 3] == 0)
-    pic_array = (pic_array[:, :, :3] - MEANS[dataset]) / STDS[dataset]
+    pic_array = (pic_array[:, :, :3] - dataset_mean) / dataset_std
     pic_array[i1, i2] = [0, 0, 0]
     return pic_array
 
 
-def apply_policy(policy, img, dset, image_size):
+def apply_policy(policy, img, image_size):
     """Apply the `policy` to the numpy `img`.
 
   Args:
@@ -65,20 +53,19 @@ def apply_policy(policy, img, dset, image_size):
       is the probability of applying the operation and `level` is what strength
       the operation to apply.
     img: Numpy image that will have `policy` applied to it.
-    dset: Dataset, one of the keys of MEANS or STDS.
     image_size: Width and height of image.
 
   Returns:
     The result of applying `policy` to `img`.
   """
-    pil_img = pil_wrap(img, dset)
+    pil_img = pil_wrap(img)
     for xform in policy:
         assert len(xform) == 3
         name, probability, level = xform
         xform_fn = NAME_TO_TRANSFORM[name].pil_transformer(
             probability, level, image_size)
         pil_img = xform_fn(pil_img)
-    return pil_unwrap(pil_img, dset, image_size)
+    return pil_unwrap(pil_img, image_size)
 
 
 def random_flip(x):

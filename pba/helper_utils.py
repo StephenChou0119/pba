@@ -93,16 +93,10 @@ def get_lr(curr_epoch, hparams, iteration=None):
     """Returns the learning rate during training based on the current epoch."""
     assert iteration is not None
     batches_per_epoch = int(hparams.train_size / hparams.batch_size)
-    if 'svhn' in hparams.dataset and 'wrn' in hparams.model_name:
-        lr = step_lr(hparams.lr, curr_epoch)
-    elif 'cifar' in hparams.dataset or ('svhn' in hparams.dataset and
-                                        'shake_shake' in hparams.model_name):
-        lr = cosine_lr(hparams.lr, curr_epoch, iteration, batches_per_epoch,
-                       hparams.num_epochs)
-    else:
-        lr = cosine_lr(hparams.lr, curr_epoch, iteration, batches_per_epoch,
-                       hparams.num_epochs)
-        tf.logging.log_first_n(tf.logging.WARN, 'Default to cosine learning rate.', 1)
+
+    lr = cosine_lr(hparams.lr, curr_epoch, iteration, batches_per_epoch,
+                   hparams.num_epochs)
+
     return lr
 
 

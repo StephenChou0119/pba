@@ -109,7 +109,7 @@ class Model(object):
         assert mode in ['train', 'eval']
         self.mode = mode
         self._setup_misc(mode)
-        self._setup_images_and_labels(self.hparams.dataset)
+        self._setup_images_and_labels()
         self._build_graph(self.images, self.labels, mode)
 
         self.init = tf.group(tf.global_variables_initializer(),
@@ -123,16 +123,12 @@ class Model(object):
         if mode == 'eval':
             self.batch_size = self.hparams.test_batch_size
 
-    def _setup_images_and_labels(self, dataset):
+    def _setup_images_and_labels(self):
         """Sets up image and label placeholders for the model."""
-        if dataset == 'cifar10' or dataset == 'cifar100' or self.mode == 'train':
-            self.images = tf.placeholder(tf.float32,
-                                         [self.batch_size, self.image_size, self.image_size, 3])
-            self.labels = tf.placeholder(tf.float32,
-                                         [self.batch_size, self.num_classes])
-        else:
-            self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, 3])
-            self.labels = tf.placeholder(tf.float32, [None, self.num_classes])
+        self.images = tf.placeholder(tf.float32,
+                                     [self.batch_size, self.image_size, self.image_size, 3])
+        self.labels = tf.placeholder(tf.float32,
+                                     [self.batch_size, self.num_classes])
 
     def assign_epoch(self, session, epoch_value):
         session.run(

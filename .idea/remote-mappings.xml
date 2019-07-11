@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings server-id="python@sftp://linkface@100.73.223.111:22022/home/linkface/software/anaconda3/envs/pytorchlatest/bin/python" />
+      </list>
+    </list>
+  </component>
+</project>
