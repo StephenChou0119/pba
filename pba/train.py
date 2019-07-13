@@ -1,9 +1,9 @@
-"""Train and evaluate models using augmentation schedules."""
-"""Train and evaluate models using augmentation schedules."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+"""Train and evaluate models using augmentation schedules."""
+"""Train and evaluate models using augmentation schedules."""
+
 
 import os
 import ray

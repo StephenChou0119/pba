@@ -72,25 +72,7 @@ class DataSet(object):
         self.epochs = 0
 
         self.parse_policy(hparams)
-        self.load_data(hparams)
-
-        # Apply normalization
-        self.train_images = self.train_images.transpose(0, 2, 3, 1) / 255.0
-        self.val_images = self.val_images.transpose(0, 2, 3, 1) / 255.0
-        self.test_images = self.test_images.transpose(0, 2, 3, 1) / 255.0
-        mean = augmentation_transforms_autoaug.dataset_mean
-        std = augmentation_transforms_autoaug.dataset_mean
-        tf.logging.info('mean:{}    std: {}'.format(mean, std))
-
-        self.train_images = (self.train_images - mean) / std
-        self.val_images = (self.val_images - mean) / std
-        self.test_images = (self.test_images - mean) / std
-
-        assert len(self.test_images) == len(self.test_labels)
-        assert len(self.train_images) == len(self.train_labels)
-        assert len(self.val_images) == len(self.val_labels)
-        tf.logging.info('train dataset size: {}, test: {}, val: {}'.format(
-            len(self.train_images), len(self.test_images), len(self.val_images)))
+        self.load_data()
 
     def parse_policy(self, hparams):
         """Parses policy schedule from input, which can be a list, list of lists, text file, or pickled list.
@@ -194,6 +176,8 @@ class DataSet(object):
             [
                 crop,
                 transforms.Resize(224),
+                transforms.ToTensor(),
+                transforms.
             ]
         )
         self.train_loader = DataLoader(CsvDataset(train_data_root, train_csv_path, transform=transform),
@@ -213,9 +197,9 @@ class DataSet(object):
         self.test_iter = iter(self.test_loader)
 
         self.num_classes = 2
-        self.num_train = len(self.train_dataset)
-        self.num_val = len(self.val_dataset)
-        self.num_test = len(self.test_dataset)
+        self.num_train = len(self.train_loader)
+        self.num_val = len(self.val_loader)
+        self.num_test = len(self.test_loader)
         self.image_size = 224
 
     def next_batch(self, iteration=None):

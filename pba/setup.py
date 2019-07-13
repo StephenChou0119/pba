@@ -1,9 +1,7 @@
-"""Parse flags and set up hyperparameters."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
+"""Parse flags and set up hyperparameters."""
 import argparse
 import random
 import tensorflow as tf
@@ -16,7 +14,7 @@ def create_parser(state):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--model_name',
-        default='wrn',
+        default='wrn_28_10',
         choices=('wrn_28_10', 'wrn_40_2', 'shake_shake_32', 'shake_shake_96',
                  'shake_shake_112', 'pyramid_net', 'resnet'))
     parser.add_argument('--local_dir', type=str, default='/tmp/ray_results/',  help='Ray directory.')
@@ -43,7 +41,7 @@ def create_parser(state):
     parser.add_argument('--wd', type=float, default=0.0005, help='weight decay')
     parser.add_argument('--bs', type=int, default=512, help='batch size')
     parser.add_argument('--test_bs', type=int, default=512, help='test batch size')
-    parser.add_argument('--num_samples', type=int, default=1, help='Number of Ray samples')
+    parser.add_argument('--num_samples', type=int, default=16, help='Number of Ray samples')
 
     if state == 'train':
         parser.add_argument(
@@ -58,7 +56,7 @@ def create_parser(state):
         parser.add_argument(
             '--hp_policy_epochs',
             type=int,
-            default=200,
+            default=100,
             help='number of epochs/iterations policy trained for')
         parser.add_argument(
             '--no_aug',
@@ -69,7 +67,7 @@ def create_parser(state):
         parser.add_argument('--name', type=str, default='autoaug')
 
     elif state == 'search':
-        parser.add_argument('--perturbation_interval', type=int, default=10)
+        parser.add_argument('--perturbation_interval', type=int, default=3)
         parser.add_argument('--name', type=str, default='autoaug_pbt')
     else:
         raise ValueError('unknown state')
@@ -91,10 +89,7 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
     tf.hparams object.
   """
     epochs = 0
-    tf.logging.info('data path: {}'.format(FLAGS.data_path))
     hparams = tf.contrib.training.HParams(
-        train_size=FLAGS.train_size,
-        validation_size=FLAGS.val_size,
         batch_size=FLAGS.bs,
         gradient_clipping_by_global_norm=5.0,
         explore=FLAGS.explore,
