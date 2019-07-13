@@ -96,6 +96,95 @@ def build_model(inputs, num_classes, is_training, hparams):
     return logits
 
 
+def run_epoch_training(session, model, dataset, curr_epoch):
+    """Runs one epoch of training for the model passed in.
+
+  Args:
+    session: TensorFlow session the model will be run with.
+    model: TensorFlow model that will be evaluated.
+    dataset: DataSet object that contains data that `model` will evaluate.
+    curr_epoch: How many of epochs of training have been done so far.
+
+  Returns:
+    The accuracy of 'model' on the training set
+  """
+    steps_per_epoch = int(model.hparams.train_size / model.hparams.batch_size)
+    tf.logging.info('steps per epoch: {}'.format(steps_per_epoch))
+    curr_step = session.run(model.global_step)
+    assert curr_step % steps_per_epoch == 0
+
+    # Get the current learning rate for the model based on the current epoch
+    curr_lr = helper_utils.get_lr(curr_epoch, model.hparams, iteration=0)
+    tf.logging.info('lr of {} for epoch {}'.format(curr_lr, curr_epoch))
+
+    correct = 0
+    count = 0
+    for step in range(steps_per_epoch):
+        curr_lr = helper_utils.get_lr(curr_epoch, model.hparams, iteration=(step + 1))
+        # Update the lr rate variable to the current LR.
+        model.lr_rate_ph.load(curr_lr, session=session)
+        if step % 20 == 0:
+            tf.logging.info('Training {}/{}'.format(step, steps_per_epoch))
+
+        train_images, train_labels = dataset.next_batch(curr_epoch)
+
+
+        _, step, preds = session.run(
+            [model.train_op, model.global_step, model.predictions],
+            feed_dict={
+                model.images: train_images,
+                model.labels: train_labels,
+            })
+
+        correct += np.sum(
+            np.equal(np.argmax(train_labels, 1), np.argmax(preds, 1)))
+        count += len(preds)
+    train_accuracy = correct / count
+
+    tf.logging.info('Train accuracy: {}'.format(train_accuracy))
+    return train_accuracy
+
+
+
+def eval_child_model(session, model, dataset, mode):
+    """Evaluates `model` on held out data depending on `mode`.
+
+  Args:
+    session: TensorFlow session the model will be run with.
+    model: TensorFlow model that will be evaluated.
+    dataset: DataSet object that contains data that `model` will evaluate.
+    mode: Will `model` either evaluate validation or test data.
+
+  Returns:
+    Accuracy of `model` when evaluated on the specified dataset.
+
+  Raises:
+    ValueError: if invalid dataset `mode` is specified.
+  """
+    if mode == 'val':
+        loader = dataset.val_loader
+    elif mode == 'test':
+        loader = dataset.test_loader
+    else:
+        raise ValueError('Not valid eval mode')
+    tf.logging.info('model.batch_size is {}'.format(model.batch_size))
+
+    correct = 0
+    count = 0
+    for batch in loader:
+        preds = session.run(
+            model.predictions,
+            feed_dict={
+                model.images: batch[0],
+                model.labels: batch[1],
+            })
+        correct += np.sum(
+            np.equal(np.argmax(batch[1], 1), np.argmax(preds, 1)))
+        count += len(preds)
+    assert count == len(loader)
+    tf.logging.info('correct: {}, total: {}'.format(correct, count))
+    return correct / count
+
 class Model(object):
     """Builds an model."""
 
@@ -208,9 +297,9 @@ class ModelTrainer(object):
         # Set the random seed to be sure the same validation set
         # is used for each model
         np.random.seed(0)
-        self.data_loader = data_utils.DataSet(hparams)
+        self.dataset = data_utils.DataSet(hparams)
         np.random.seed()  # Put the random seed back to random
-        self.data_loader.reset()
+        self.dataset.reset()
 
         # extra stuff for ray
         self._build_models()
@@ -236,12 +325,12 @@ class ModelTrainer(object):
         tf.logging.warning(
             'Loaded child model checkpoint from {}'.format(checkpoint_path))
 
-    def eval_child_model(self, model, data_loader, mode):
+    def eval_child_model(self, model, dataset, mode):
         """Evaluate the child model.
 
         Args:
           model: image model that will be evaluated.
-          data_loader: dataset object to extract eval data from.
+          dataset: dataset object to extract eval data from.
           mode: will the model be evalled on train, val or test.
 
         Returns:
@@ -250,8 +339,8 @@ class ModelTrainer(object):
         tf.logging.info('Evaluating child model in mode {}'.format(mode))
         while True:
             try:
-                accuracy = helper_utils.eval_child_model(
-                    self.session, model, data_loader, mode)
+                accuracy = eval_child_model(
+                    self.session, model, dataset, mode)
                 tf.logging.info(
                     'Eval child model accuracy: {}'.format(accuracy))
                 # If epoch trained without raising the below errors, break
@@ -280,23 +369,24 @@ class ModelTrainer(object):
         # Determine if we should build the train and eval model. When using
         # distributed training we only want to build one or the other and not both.
         with tf.variable_scope('model', use_resource=False):
-            m = Model(self.hparams, self.data_loader.num_classes, self.data_loader.image_size)
+            m = Model(self.hparams, self.dataset.num_classes, self.dataset.image_size)
             m.build('train')
             self._num_trainable_params = m.num_trainable_params
             self._saver = m.saver
         with tf.variable_scope('model', reuse=True, use_resource=False):
-            meval = Model(self.hparams, self.data_loader.num_classes, self.data_loader.image_size)
+            meval = Model(self.hparams, self.dataset.num_classes, self.dataset.image_size)
             meval.build('eval')
         self.m = m
         self.meval = meval
+        self.m.hparams.add_hparam('train_size', len(self.dataset.train_loader.dataset))
 
     def _run_training_loop(self, curr_epoch):
         """Trains the model `m` for one epoch."""
         start_time = time.time()
         while True:
             try:
-                train_accuracy = helper_utils.run_epoch_training(
-                    self.session, self.m, self.data_loader, curr_epoch)
+                train_accuracy = run_epoch_training(
+                    self.session, self.m, self.dataset, curr_epoch)
                 break
             except (tf.errors.AbortedError, tf.errors.UnavailableError) as e:
                 tf.logging.info(
@@ -309,7 +399,7 @@ class ModelTrainer(object):
     def _compute_final_accuracies(self, iteration):
         """Run once training is finished to compute final test accuracy."""
         if (iteration >= self.hparams.num_epochs - 1):
-            test_accuracy = self.eval_child_model(self.meval, self.data_loader,
+            test_accuracy = self.eval_child_model(self.meval, self.dataset,
                                                   'test')
         else:
             test_accuracy = 0
@@ -322,7 +412,7 @@ class ModelTrainer(object):
         training_accuracy = self._run_training_loop(curr_epoch)
         if self.hparams.validation_size > 0:
             valid_accuracy = self.eval_child_model(self.meval,
-                                                   self.data_loader, 'val')
+                                                   self.dataset, 'val')
         tf.logging.info('Train Acc: {}, Valid Acc: {}'.format(
             training_accuracy, valid_accuracy))
         return training_accuracy, valid_accuracy
@@ -331,7 +421,7 @@ class ModelTrainer(object):
 
     def reset_config(self, new_hparams):
         self.hparams = new_hparams
-        self.data_loader.reset_policy(new_hparams)
+        self.dataset.reset_policy(new_hparams)
         return
 
     @property

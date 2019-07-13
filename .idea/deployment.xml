@@ -12,7 +12,7 @@
       <paths name="113">
         <serverdata>
           <mappings>
-            <mapping deploy="/data/zwy/hack_pba_tensorflow" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/data/zwy/hack_pba_tensorflow" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

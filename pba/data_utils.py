@@ -175,9 +175,8 @@ class DataSet(object):
         transform = transforms.Compose(
             [
                 crop,
-                transforms.Resize(224),
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
-                transforms.
             ]
         )
         self.train_loader = DataLoader(CsvDataset(train_data_root, train_csv_path, transform=transform),
@@ -192,9 +191,7 @@ class DataSet(object):
                                       batch_size=self.hparams.test_batch_size,
                                       shuffle=False,
                                       num_workers=2)
-        self.train_iter = iter(self.train_loader)
-        self.val_iter = iter(self.val_loader)
-        self.test_iter = iter(self.test_loader)
+        self.__train_iter = iter(self.train_loader)
 
         self.num_classes = 2
         self.num_train = len(self.train_loader)
@@ -205,16 +202,23 @@ class DataSet(object):
     def next_batch(self, iteration=None):
         """Return the next minibatch of augmented data."""
         try:
-            batched_data = next(self.train_iter)
+            batched_data = next(self.__train_iter)
         except StopIteration:
             # Increase epoch number
             epoch = self.epochs + 1
             self.reset()
             self.epochs = epoch
-            batched_data = next(self.train_iter)
+            batched_data = next(self.__train_iter)
         final_imgs = []
 
         images, labels = batched_data
+        images = images.numpy()
+        images = images.transpose(0,2,3,1)
+        print(images.shape)
+        labels = labels.numpy()
+        batchsize = labels.size
+        labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
+
         for data in images:
             if not self.hparams.no_aug:
                 # apply PBA policy)
@@ -249,6 +253,5 @@ class DataSet(object):
         """Reset training data and index into the training data."""
         self.epochs = 0
         # Shuffle the training data
-        self.train_iter = iter(self.train_loader)
-        self.val_iter = iter(self.val_loader)
-        self.test_iter = iter(self.test_loader)
+        self.__train_iter = iter(self.train_loader)
+

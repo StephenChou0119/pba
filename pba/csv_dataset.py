@@ -21,7 +21,7 @@ class CsvDataset(Dataset):
 
     def __getitem__(self, item):
         img_name = self.target_frame.iloc[item, 0]
-        target = float(self.target_frame.iloc[item, 1])
+        target = int(self.target_frame.iloc[item, 1])
         img_fullname = os.path.join(self.root, img_name)
         image = Image.open(img_fullname)
         if self.transform is not None:
