@@ -42,6 +42,7 @@ def create_parser(state):
     parser.add_argument('--bs', type=int, default=512, help='batch size')
     parser.add_argument('--test_bs', type=int, default=512, help='test batch size')
     parser.add_argument('--num_samples', type=int, default=16, help='Number of Ray samples')
+    parser.add_argument('--resnet_size', type=int, default=50, help='Number of Ray samples')
 
     if state == 'train':
         parser.add_argument(
@@ -131,40 +132,34 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
 
     if FLAGS.model_name == 'wrn_40_2':
         hparams.add_hparam('model_name', 'wrn')
-        epochs = 200
         hparams.add_hparam('wrn_size', 32)
         hparams.add_hparam('wrn_depth', 40)
     elif FLAGS.model_name == 'wrn_28_10':
         hparams.add_hparam('model_name', 'wrn')
-        epochs = 200
         hparams.add_hparam('wrn_size', 160)
         hparams.add_hparam('wrn_depth', 28)
     elif FLAGS.model_name == 'resnet':
         hparams.add_hparam('model_name', 'resnet')
-        epochs = 200
         hparams.add_hparam('resnet_size', 20)
         hparams.add_hparam('num_filters', FLAGS.resnet_size)
     elif FLAGS.model_name == 'shake_shake_32':
         hparams.add_hparam('model_name', 'shake_shake')
-        epochs = 1800
         hparams.add_hparam('shake_shake_widen_factor', 2)
     elif FLAGS.model_name == 'shake_shake_96':
         hparams.add_hparam('model_name', 'shake_shake')
-        epochs = 1800
         hparams.add_hparam('shake_shake_widen_factor', 6)
     elif FLAGS.model_name == 'shake_shake_112':
         hparams.add_hparam('model_name', 'shake_shake')
-        epochs = 1800
         hparams.add_hparam('shake_shake_widen_factor', 7)
     elif FLAGS.model_name == 'pyramid_net':
         hparams.add_hparam('model_name', 'pyramid_net')
-        epochs = 1800
         hparams.set_hparam('batch_size', 64)
     else:
         raise ValueError('Not Valid Model Name: %s' % FLAGS.model_name)
     if FLAGS.epochs > 0:
-        tf.logging.info('overwriting with custom epochs')
         epochs = FLAGS.epochs
+    else:
+        raise ValueError('epochs must larger than 0')
     hparams.add_hparam('num_epochs', epochs)
     tf.logging.info('epochs: {}, lr: {}, wd: {}'.format(
         hparams.num_epochs, hparams.lr, hparams.weight_decay_rate))

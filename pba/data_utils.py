@@ -32,11 +32,8 @@ import torchvision
 from torch.utils.data import DataLoader
 
 from autoaugment.data_utils import unpickle
-import pba.policies as found_policies
 from pba.utils import parse_log_schedule
 import pba.augmentation_transforms_hp as augmentation_transforms_pba
-import pba.augmentation_transforms as augmentation_transforms_autoaug
-
 
 # pylint:disable=logging-format-interpolation
 
@@ -214,7 +211,6 @@ class DataSet(object):
         images, labels = batched_data
         images = images.numpy()
         images = images.transpose(0,2,3,1)
-        print(images.shape)
         labels = labels.numpy()
         batchsize = labels.size
         labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)

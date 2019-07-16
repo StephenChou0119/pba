@@ -108,14 +108,14 @@
       "checkpoint_score_attr": "training_iteration",
       "_checkpoint": "80049553000000000000008c0e7261792e74756e652e747269616c948c0a436865636b706f696e749493942981947d94288c0773746f72616765948c046469736b948c0576616c7565944e8c0b6c6173745f726573756c74947d9475622e",
       "export_formats": [],
-      "status": "RUNNING",
+      "status": "ERROR",
       "logdir": "/data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_0_2019-07-13_21-04-18_0z_d0ey",
       "runner": null,
       "result_logger": null,
       "last_debug": 0,
       "trial_id": "b94e5e40",
-      "error_file": "/data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_0_2019-07-13_21-04-18_0z_d0ey/error_2019-07-15_12-11-16.txt",
-      "num_failures": 1,
+      "error_file": "/data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_0_2019-07-13_21-04-18_0z_d0ey/error_2019-07-16_10-38-18.txt",
+      "num_failures": 3,
       "custom_trial_name": null,
       "results": "80049502000000000000004e2e",
       "best_result": "80049502000000000000004e2e",
@@ -130,7 +130,7 @@
         "param_config",
         "extra_arg"
       ],
-      "__logger_started__": true
+      "__logger_started__": false
     },
     {
       "trainable_name": "RayModel",
@@ -240,14 +240,14 @@
       "checkpoint_score_attr": "training_iteration",
       "_checkpoint": "80049553000000000000008c0e7261792e74756e652e747269616c948c0a436865636b706f696e749493942981947d94288c0773746f72616765948c046469736b948c0576616c7565944e8c0b6c6173745f726573756c74947d9475622e",
       "export_formats": [],
-      "status": "PENDING",
-      "logdir": null,
+      "status": "RUNNING",
+      "logdir": "/data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_1_2019-07-16_10-40-07b0vhlppa",
       "runner": null,
       "result_logger": null,
       "last_debug": 0,
       "trial_id": "b94ea83c",
-      "error_file": null,
-      "num_failures": 0,
+      "error_file": "/data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_1_2019-07-16_10-40-07b0vhlppa/error_2019-07-16_10-57-28.txt",
+      "num_failures": 2,
       "custom_trial_name": null,
       "results": "80049502000000000000004e2e",
       "best_result": "80049502000000000000004e2e",
@@ -262,7 +262,7 @@
         "param_config",
         "extra_arg"
       ],
-      "__logger_started__": false
+      "__logger_started__": true
     },
     {
       "trainable_name": "RayModel",
@@ -1060,7 +1060,7 @@
   "runner_data": {
     "_global_time_limit": Infinity,
     "_total_time": 0,
-    "_iteration": 1,
+    "_iteration": 7,
     "_verbose": false,
     "_server_port": 4321,
     "_metadata_checkpoint_dir": "/data/zwy/hack_pba_tensorflow/results/hack_first",
@@ -1070,6 +1070,6 @@
   },
   "stats": {
     "start_time": 1563023058.5363984,
-    "timestamp": 1563163876.2967336
+    "timestamp": 1563245848.0917606
   }
 }

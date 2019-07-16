@@ -46,7 +46,7 @@ class RayModel(Trainable):
     def _restore(self, checkpoint):
         """Restores model from checkpoint."""
         tf.logging.info("RESTORING: {}".format(checkpoint))
-        self.trainer.extract_model_spec(checkpoint)
+        self.trainer.restore(checkpoint)
 
     def reset_config(self, new_config):
         """Resets trainer config for fast PBT implementation."""
@@ -57,29 +57,29 @@ class RayModel(Trainable):
 
 
 def main(_):
-    FLAGS = create_parser("train")  # pylint: disable=invalid-name
-    hparams = create_hparams("train", FLAGS)
+    args = create_parser("train")  # pylint: disable=invalid-name
+    hparams = create_hparams("train", args)
 
     train_spec = {
         "run": RayModel,
         "resources_per_trial": {
-            "cpu": FLAGS.cpu,
-            "gpu": FLAGS.gpu
+            "cpu": args.cpu,
+            "gpu": args.gpu
         },
         "stop": {
             "training_iteration": hparams.num_epochs,
         },
         "config": hparams.values(),
-        "local_dir": FLAGS.local_dir,
-        "checkpoint_freq": FLAGS.checkpoint_freq,
-        "num_samples": FLAGS.num_samples
+        "local_dir": args.local_dir,
+        "checkpoint_freq": args.checkpoint_freq,
+        "num_samples": args.num_samples
     }
 
-    if FLAGS.restore:
-        train_spec["restore"] = FLAGS.restore
+    if args.restore:
+        train_spec["restore"] = args.restore
 
     ray.init()
-    run_experiments({FLAGS.name: train_spec})
+    run_experiments({args.name: train_spec})
 
 
 if __name__ == "__main__":

@@ -319,7 +319,7 @@ class ModelTrainer(object):
         tf.logging.info('Saved child model')
         return model_save_name
 
-    def extract_model_spec(self, checkpoint_path):
+    def restore(self, checkpoint_path):
         """Loads a checkpoint with the architecture structure stored in the name."""
         self.saver.restore(self.session, checkpoint_path)
         tf.logging.warning(
