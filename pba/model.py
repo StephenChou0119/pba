@@ -26,7 +26,6 @@ import time
 import numpy as np
 import tensorflow as tf
 
-import autoaugment.custom_ops as ops
 from autoaugment.shake_drop import build_shake_drop_model
 from autoaugment.shake_shake import build_shake_shake_model
 import pba.data_utils as data_utils
@@ -35,6 +34,34 @@ from pba.wrn import build_wrn_model
 from pba.resnet import build_resnet_model
 
 arg_scope = tf.contrib.framework.arg_scope
+
+
+@tf.contrib.framework.add_arg_scope
+def batch_norm(inputs,
+               decay=0.999,
+               center=True,
+               scale=False,
+               epsilon=0.001,
+               is_training=True,
+               reuse=None,
+               scope=None):
+  """Small wrapper around tf.contrib.layers.batch_norm."""
+  return tf.contrib.layers.batch_norm(
+      inputs,
+      decay=decay,
+      center=center,
+      scale=scale,
+      epsilon=epsilon,
+      activation_fn=None,
+      param_initializers=None,
+      updates_collections=tf.GraphKeys.UPDATE_OPS,
+      is_training=is_training,
+      reuse=reuse,
+      trainable=True,
+      fused=True,
+      data_format='NHWC',
+      zero_debias_moving_mean=False,
+      scope=scope)
 
 
 def setup_arg_scopes(is_training):
@@ -61,7 +88,7 @@ def setup_arg_scopes(is_training):
 
     scopes = []
 
-    scopes.append(arg_scope([ops.batch_norm], **batch_norm_params))
+    scopes.append(arg_scope([batch_norm], **batch_norm_params))
     return scopes
 
 

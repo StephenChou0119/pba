@@ -24,8 +24,6 @@ import numpy as np
 from PIL import ImageOps, ImageEnhance, ImageFilter, Image
 
 PARAMETER_MAX = 10  # What is the max 'level' a transform could be predicted
-# dataset_mean = (np.array([130.13, 112.82, 102.47]).reshape((3, 1))* np.ones((3, 224, 224)).reshape(3, -1)).reshape(3,224,224)
-# dataset_std = (np.array([67.28, 64.61, 64.46]).reshape((3, 1))* np.ones((3, 224, 224)).reshape(3, -1)).reshape(3,224,224)
 dataset_mean = [130.13, 112.82, 102.47]
 dataset_std = [67.28, 64.61, 64.46]
 def pil_wrap(img):
@@ -42,6 +40,7 @@ def pil_unwrap(pil_img, image_size):
     pic_array = (pic_array[:, :, :3] - dataset_mean) / dataset_std
     pic_array[i1, i2] = [0, 0, 0]
     return pic_array
+
 
 def apply_policy(policy, img, image_size):
     """Apply the `policy` to the numpy `img`.

@@ -21,7 +21,7 @@ def create_parser(state):
     parser.add_argument('--restore', type=str, default=None, help='If specified, tries to restore from given path.')
     parser.add_argument('--checkpoint_freq', type=int, default=50, help='Checkpoint frequency.')
     parser.add_argument(
-        '--cpu', type=float, default=4, help='Allocated by Ray')
+        '--cpu', type=float, default=5, help='Allocated by Ray')
     parser.add_argument(
         '--gpu', type=float, default=1, help='Allocated by Ray')
     # search-use only
@@ -33,7 +33,7 @@ def create_parser(state):
     parser.add_argument(
         '--epochs',
         type=int,
-        default=0,
+        default=10,
         help='Number of epochs, or <=0 for default')
     parser.add_argument(
         '--no_cutout', action='store_true', help='turn off cutout')
@@ -42,7 +42,7 @@ def create_parser(state):
     parser.add_argument('--bs', type=int, default=512, help='batch size')
     parser.add_argument('--test_bs', type=int, default=512, help='test batch size')
     parser.add_argument('--num_samples', type=int, default=16, help='Number of Ray samples')
-    parser.add_argument('--resnet_size', type=int, default=50, help='Number of Ray samples')
+    parser.add_argument('--resnet_size', type=int, default=50, help='resnet size')
 
     if state == 'train':
         parser.add_argument(
@@ -65,11 +65,11 @@ def create_parser(state):
             help=
             'no additional augmentation at all (besides cutout if not toggled)'
         )
-        parser.add_argument('--name', type=str, default='autoaug')
+        parser.add_argument('--name', type=str)
 
     elif state == 'search':
         parser.add_argument('--perturbation_interval', type=int, default=3)
-        parser.add_argument('--name', type=str, default='autoaug_pbt')
+        parser.add_argument('--name', type=str,)
     else:
         raise ValueError('unknown state')
     args = parser.parse_args()
@@ -89,7 +89,6 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
   Returns:
     tf.hparams object.
   """
-    epochs = 0
     hparams = tf.contrib.training.HParams(
         batch_size=FLAGS.bs,
         gradient_clipping_by_global_norm=5.0,

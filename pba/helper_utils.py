@@ -21,24 +21,22 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
-from autoaugment.helper_utils import setup_loss, decay_weights, cosine_lr  # pylint: disable=unused-import
 
-def step_lr(learning_rate, epoch):
-    """Step Learning rate.
+def setup_loss(logits, labels):
+    """Returns the cross entropy for the given `logits` and `labels`."""
+    predictions = tf.nn.softmax(logits)
+    cost = tf.losses.softmax_cross_entropy(onehot_labels=labels,
+                                           logits=logits)
+    return predictions, cost
 
-  Args:
-    learning_rate: Initial learning rate.
-    epoch: Current epoch we are one. This is one based.
 
-  Returns:
-    The learning rate to be used for this current batch.
-  """
-    if epoch < 80:
-        return learning_rate
-    elif epoch < 120:
-        return learning_rate * 0.1
-    else:
-        return learning_rate * 0.01
+def decay_weights(cost, weight_decay_rate):
+    """Calculates the loss for l2 weight decay and adds it to `cost`."""
+    costs = []
+    for var in tf.trainable_variables():
+        costs.append(tf.nn.l2_loss(var))
+    cost += tf.multiply(weight_decay_rate, tf.add_n(costs))
+    return cost
 
 
 def get_lr(curr_epoch, hparams, iteration=None):
@@ -50,3 +48,21 @@ def get_lr(curr_epoch, hparams, iteration=None):
                    hparams.num_epochs)
 
     return lr
+
+
+def cosine_lr(learning_rate, epoch, iteration, batches_per_epoch, total_epochs):
+    """Cosine Learning rate.
+
+    Args:
+      learning_rate: Initial learning rate.
+      epoch: Current epoch we are one. This is one based.
+      iteration: Current batch in this epoch.
+      batches_per_epoch: Batches per epoch.
+      total_epochs: Total epochs you are training for.
+
+    Returns:
+      The learning rate to be used for this current batch.
+    """
+    t_total = total_epochs * batches_per_epoch
+    t_cur = float(epoch * batches_per_epoch + iteration)
+    return 0.5 * learning_rate * (1 + np.cos(np.pi * t_cur / t_total))

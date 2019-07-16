@@ -24,14 +24,9 @@ try:
     import cPickle as pickle
 except:
     import pickle
-import os
-import random
 import numpy as np
 import tensorflow as tf
-import torchvision
 from torch.utils.data import DataLoader
-
-from autoaugment.data_utils import unpickle
 from pba.utils import parse_log_schedule
 import pba.augmentation_transforms_hp as augmentation_transforms_pba
 
