@@ -212,11 +212,10 @@ def eval_child_model(session, model, dataset, mode):
                 model.labels: labels,
             })
         correct += np.sum(
-            np.equal(np.argmax(batch[1], 1), np.argmax(preds, 1)))
+            np.equal(np.argmax(labels, 1), np.argmax(preds, 1)))
         count += len(preds)
-    assert count == len(loader)
-    tf.logging.info('correct: {}, total: {}'.format(correct, count))
     return correct / count
+
 
 class Model(object):
     """Builds an model."""

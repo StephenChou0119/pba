@@ -185,7 +185,7 @@ class DataSet(object):
                                        num_workers=2,
                                        drop_last=True)
         self.val_loader = DataLoader(CsvDataset(val_data_root, val_csv_path, transform=transform),
-                                     batch_size=self.hparams.batch_size,
+                                     batch_size=self.hparams.test_batch_size,
                                      shuffle=False,
                                      num_workers=2,
                                      drop_last=True)
