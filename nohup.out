@@ -1,0 +1,441 @@
+WARNING: Logging before flag parsing goes to stderr.
+W0713 21:02:24.540474 139916406843136 lazy_loader.py:50] 
+The TensorFlow contrib module will not be included in TensorFlow 2.0.
+For more information, please see:
+  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+  * https://github.com/tensorflow/addons
+  * https://github.com/tensorflow/io (for I/O related ops)
+If you depend on functionality not listed there, please file an issue.
+
+W0713 21:02:24.786044 139916406843136 deprecation_wrapper.py:119] From pba/search.py:94: The name tf.logging.set_verbosity is deprecated. Please use tf.compat.v1.logging.set_verbosity instead.
+
+W0713 21:02:24.786234 139916406843136 deprecation_wrapper.py:119] From pba/search.py:94: The name tf.logging.INFO is deprecated. Please use tf.compat.v1.logging.INFO instead.
+
+W0713 21:02:24.786321 139916406843136 deprecation_wrapper.py:119] From pba/search.py:95: The name tf.app.run is deprecated. Please use tf.compat.v1.app.run instead.
+
+W0713 21:02:24.787915 139916406843136 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/setup.py:75: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+
+I0713 21:02:24.788022 139916406843136 setup.py:75] Namespace(bs=512, checkpoint_freq=50, cpu=40, epochs=10, explore='cifar10', gpu=8, local_dir='/data/zwy/hack_pba_tensorflow/results/', lr=0.1, model_name='wrn_40_2', name='hack_first', no_cutout=False, num_samples=8, perturbation_interval=3, restore=None, test_bs=512, wd=0.0005)
+I0713 21:02:24.788134 139916406843136 setup.py:166] overwriting with custom epochs
+I0713 21:02:24.788198 139916406843136 setup.py:170] epochs: 10, lr: 0.1, wd: 0.0005
+2019-07-13 21:02:24,788	INFO node.py:498 -- Process STDOUT and STDERR is being redirected to /tmp/ray/session_2019-07-13_21-02-24_788537_7901/logs.
+2019-07-13 21:02:24,900	INFO services.py:409 -- Waiting for redis server at 127.0.0.1:16047 to respond...
+2019-07-13 21:02:25,028	INFO services.py:409 -- Waiting for redis server at 127.0.0.1:34790 to respond...
+2019-07-13 21:02:25,029	INFO services.py:806 -- Starting Redis shard with 10.0 GB max memory.
+2019-07-13 21:02:25,066	INFO node.py:512 -- Process STDOUT and STDERR is being redirected to /tmp/ray/session_2019-07-13_21-02-24_788537_7901/logs.
+2019-07-13 21:02:25,066	WARNING services.py:1298 -- Warning: Capping object memory store to 20.0GB. To increase this further, specify `object_store_memory` when calling ray.init() or ray start.
+2019-07-13 21:02:25,066	INFO services.py:1446 -- Starting the Plasma object store with 20.0 GB memory using /dev/shm.
+2019-07-13 21:02:25,198	WARNING pbt.py:197 -- `reward_attr` is deprecated and will be removed in a future version of Tune. Setting `metric=val_acc` and `mode=max`.
+2019-07-13 21:02:25,203	INFO tune.py:65 -- Did not find checkpoint file in /data/zwy/hack_pba_tensorflow/results/hack_first.
+2019-07-13 21:02:25,203	INFO tune.py:233 -- Starting a new experiment.
+W0713 21:02:25.440080 139916406843136 deprecation_wrapper.py:119] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/logger.py:136: The name tf.VERSION is deprecated. Please use tf.version.VERSION instead.
+
+W0713 21:02:25.440506 139916406843136 deprecation_wrapper.py:119] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/logger.py:141: The name tf.summary.FileWriter is deprecated. Please use tf.compat.v1.summary.FileWriter instead.
+
+2019-07-13 21:02:25,583	WARNING util.py:64 -- The `start_trial` operation took 0.18189597129821777 seconds to complete, which may be a performance bottleneck.
+== Status ==
+PopulationBasedTraining: 0 checkpoints, 0 perturbs
+Resources requested: 0/40 CPUs, 0/8 GPUs
+Memory usage on this node: 2.8/270.4 GB
+
+== Status ==
+PopulationBasedTraining: 0 checkpoints, 0 perturbs
+Resources requested: 40/40 CPUs, 8/8 GPUs
+Memory usage on this node: 3.0/270.4 GB
+Result logdir: /data/zwy/hack_pba_tensorflow/results/hack_first
+Number of trials: 8 ({'RUNNING': 1, 'PENDING': 7})
+PENDING trials:
+ - RayModel_1:	PENDING
+ - RayModel_2:	PENDING
+ - RayModel_3:	PENDING
+ - RayModel_4:	PENDING
+ - RayModel_5:	PENDING
+ - RayModel_6:	PENDING
+ - RayModel_7:	PENDING
+RUNNING trials:
+ - RayModel_0:	RUNNING
+
+[2m[36m(pid=8018)[0m WARNING: Logging before flag parsing goes to stderr.
+[2m[36m(pid=8018)[0m W0713 21:02:28.333461 140140872591104 lazy_loader.py:50] 
+[2m[36m(pid=8018)[0m The TensorFlow contrib module will not be included in TensorFlow 2.0.
+[2m[36m(pid=8018)[0m For more information, please see:
+[2m[36m(pid=8018)[0m   * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+[2m[36m(pid=8018)[0m   * https://github.com/tensorflow/addons
+[2m[36m(pid=8018)[0m   * https://github.com/tensorflow/io (for I/O related ops)
+[2m[36m(pid=8018)[0m If you depend on functionality not listed there, please file an issue.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:28.586616 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.set_verbosity is deprecated. Please use tf.compat.v1.logging.set_verbosity instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:28.586925 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.INFO is deprecated. Please use tf.compat.v1.logging.INFO instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:28.587025 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:24: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m I0713 21:02:28.587100 140140872591104 train.py:24] calling setup
+[2m[36m(pid=8018)[0m I0713 21:02:28.587296 140140872591104 data_utils.py:139] using HP Policy, policy: [('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0), ('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0)]
+[2m[36m(pid=8018)[0m W0713 21:02:55.064311 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:371: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:55.072634 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:217: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:55.074101 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:236: The name tf.train.get_or_create_global_step is deprecated. Please use tf.compat.v1.train.get_or_create_global_step instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:55.078934 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:35: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:55.087921 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:85: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:55.221086 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:191: The name tf.nn.avg_pool is deprecated. Please use tf.nn.avg_pool2d instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:56.162835 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:181: The name tf.nn.xw_plus_b is deprecated. Please use tf.compat.v1.nn.xw_plus_b instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:56.165223 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/helper_utils.py:29: The name tf.losses.softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.softmax_cross_entropy instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:56.195372 140140872591104 deprecation.py:323] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/tensorflow/python/ops/losses/losses_impl.py:121: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+[2m[36m(pid=8018)[0m Instructions for updating:
+[2m[36m(pid=8018)[0m Use tf.where in 2.0, which has the same broadcast rule as np.where
+[2m[36m(pid=8018)[0m W0713 21:02:56.204247 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:262: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m I0713 21:02:56.205953 140140872591104 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=8018)[0m W0713 21:02:56.925503 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:275: The name tf.summary.scalar is deprecated. Please use tf.compat.v1.summary.scalar instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:56.926864 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:279: The name tf.train.MomentumOptimizer is deprecated. Please use tf.compat.v1.train.MomentumOptimizer instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m W0713 21:02:57.321918 140140872591104 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:254: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+[2m[36m(pid=8018)[0m 
+[2m[36m(pid=8018)[0m I0713 21:02:57.745805 140140872591104 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=8018)[0m 2019-07-13 21:02:57.961575: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+[2m[36m(pid=8018)[0m 2019-07-13 21:02:57.974472: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810061: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x557026e49400 executing computations on platform CUDA. Devices:
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810141: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810149: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (1): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810155: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (2): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810160: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (3): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=8018)[0m 2019-07-13 21:03:05.810166: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (4): Tesla V100-PCIE-16GB, Compute Capability 7.0WARNING: Logging before flag parsing goes to stderr.
+W0713 21:04:17.904457 140018331342592 lazy_loader.py:50] 
+The TensorFlow contrib module will not be included in TensorFlow 2.0.
+For more information, please see:
+  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+  * https://github.com/tensorflow/addons
+  * https://github.com/tensorflow/io (for I/O related ops)
+If you depend on functionality not listed there, please file an issue.
+
+W0713 21:04:18.138167 140018331342592 deprecation_wrapper.py:119] From pba/search.py:94: The name tf.logging.set_verbosity is deprecated. Please use tf.compat.v1.logging.set_verbosity instead.
+
+W0713 21:04:18.138356 140018331342592 deprecation_wrapper.py:119] From pba/search.py:94: The name tf.logging.INFO is deprecated. Please use tf.compat.v1.logging.INFO instead.
+
+W0713 21:04:18.138442 140018331342592 deprecation_wrapper.py:119] From pba/search.py:95: The name tf.app.run is deprecated. Please use tf.compat.v1.app.run instead.
+
+W0713 21:04:18.140030 140018331342592 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/setup.py:75: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+
+I0713 21:04:18.140137 140018331342592 setup.py:75] Namespace(bs=512, checkpoint_freq=3, cpu=40, epochs=10, explore='cifar10', gpu=8, local_dir='/data/zwy/hack_pba_tensorflow/results/', lr=0.1, model_name='wrn_40_2', name='hack_first', no_cutout=False, num_samples=8, perturbation_interval=3, restore=None, test_bs=512, wd=0.0005)
+I0713 21:04:18.140248 140018331342592 setup.py:166] overwriting with custom epochs
+I0713 21:04:18.140311 140018331342592 setup.py:170] epochs: 10, lr: 0.1, wd: 0.0005
+2019-07-13 21:04:18,140	INFO node.py:498 -- Process STDOUT and STDERR is being redirected to /tmp/ray/session_2019-07-13_21-04-18_140648_10128/logs.
+2019-07-13 21:04:18,252	INFO services.py:409 -- Waiting for redis server at 127.0.0.1:36230 to respond...
+2019-07-13 21:04:18,381	INFO services.py:409 -- Waiting for redis server at 127.0.0.1:14245 to respond...
+2019-07-13 21:04:18,382	INFO services.py:806 -- Starting Redis shard with 10.0 GB max memory.
+2019-07-13 21:04:18,418	INFO node.py:512 -- Process STDOUT and STDERR is being redirected to /tmp/ray/session_2019-07-13_21-04-18_140648_10128/logs.
+2019-07-13 21:04:18,419	WARNING services.py:1298 -- Warning: Capping object memory store to 20.0GB. To increase this further, specify `object_store_memory` when calling ray.init() or ray start.
+2019-07-13 21:04:18,419	INFO services.py:1446 -- Starting the Plasma object store with 20.0 GB memory using /dev/shm.
+2019-07-13 21:04:18,530	WARNING pbt.py:197 -- `reward_attr` is deprecated and will be removed in a future version of Tune. Setting `metric=val_acc` and `mode=max`.
+2019-07-13 21:04:18,534	INFO tune.py:65 -- Did not find checkpoint file in /data/zwy/hack_pba_tensorflow/results/hack_first.
+2019-07-13 21:04:18,534	INFO tune.py:233 -- Starting a new experiment.
+W0713 21:04:18.764161 140018331342592 deprecation_wrapper.py:119] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/logger.py:136: The name tf.VERSION is deprecated. Please use tf.version.VERSION instead.
+
+W0713 21:04:18.764584 140018331342592 deprecation_wrapper.py:119] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/logger.py:141: The name tf.summary.FileWriter is deprecated. Please use tf.compat.v1.summary.FileWriter instead.
+
+== Status ==
+PopulationBasedTraining: 0 checkpoints, 0 perturbs
+Resources requested: 0/40 CPUs, 0/8 GPUs
+Memory usage on this node: 2.8/270.4 GB
+
+== Status ==
+PopulationBasedTraining: 0 checkpoints, 0 perturbs
+Resources requested: 40/40 CPUs, 8/8 GPUs
+Memory usage on this node: 2.8/270.4 GB
+Result logdir: /data/zwy/hack_pba_tensorflow/results/hack_first
+Number of trials: 8 ({'RUNNING': 1, 'PENDING': 7})
+PENDING trials:
+ - RayModel_1:	PENDING
+ - RayModel_2:	PENDING
+ - RayModel_3:	PENDING
+ - RayModel_4:	PENDING
+ - RayModel_5:	PENDING
+ - RayModel_6:	PENDING
+ - RayModel_7:	PENDING
+RUNNING trials:
+ - RayModel_0:	RUNNING
+
+[2m[36m(pid=10241)[0m WARNING: Logging before flag parsing goes to stderr.
+[2m[36m(pid=10241)[0m W0713 21:04:21.719997 140577814738688 lazy_loader.py:50] 
+[2m[36m(pid=10241)[0m The TensorFlow contrib module will not be included in TensorFlow 2.0.
+[2m[36m(pid=10241)[0m For more information, please see:
+[2m[36m(pid=10241)[0m   * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+[2m[36m(pid=10241)[0m   * https://github.com/tensorflow/addons
+[2m[36m(pid=10241)[0m   * https://github.com/tensorflow/io (for I/O related ops)
+[2m[36m(pid=10241)[0m If you depend on functionality not listed there, please file an issue.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:21.967349 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.set_verbosity is deprecated. Please use tf.compat.v1.logging.set_verbosity instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:21.967605 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.INFO is deprecated. Please use tf.compat.v1.logging.INFO instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:21.967772 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:24: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m I0713 21:04:21.967841 140577814738688 train.py:24] calling setup
+[2m[36m(pid=10241)[0m I0713 21:04:21.968082 140577814738688 data_utils.py:139] using HP Policy, policy: [('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0), ('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0)]
+[2m[36m(pid=10241)[0m W0713 21:04:43.608226 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:371: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:43.616623 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:217: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:43.617910 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:236: The name tf.train.get_or_create_global_step is deprecated. Please use tf.compat.v1.train.get_or_create_global_step instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:43.622599 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:35: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:43.631081 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:85: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:43.760909 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:191: The name tf.nn.avg_pool is deprecated. Please use tf.nn.avg_pool2d instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:44.690214 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:181: The name tf.nn.xw_plus_b is deprecated. Please use tf.compat.v1.nn.xw_plus_b instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:44.692920 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/helper_utils.py:29: The name tf.losses.softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.softmax_cross_entropy instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:44.722721 140577814738688 deprecation.py:323] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/tensorflow/python/ops/losses/losses_impl.py:121: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+[2m[36m(pid=10241)[0m Instructions for updating:
+[2m[36m(pid=10241)[0m Use tf.where in 2.0, which has the same broadcast rule as np.where
+[2m[36m(pid=10241)[0m W0713 21:04:44.731632 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:262: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m I0713 21:04:44.733935 140577814738688 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=10241)[0m W0713 21:04:45.499494 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:275: The name tf.summary.scalar is deprecated. Please use tf.compat.v1.summary.scalar instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:45.500947 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:279: The name tf.train.MomentumOptimizer is deprecated. Please use tf.compat.v1.train.MomentumOptimizer instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m W0713 21:04:45.899302 140577814738688 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:254: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+[2m[36m(pid=10241)[0m 
+[2m[36m(pid=10241)[0m I0713 21:04:46.325556 140577814738688 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:46.549788: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:46.563666: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321740: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x558c36255d20 executing computations on platform CUDA. Devices:
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321788: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321796: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (1): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321816: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (2): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321821: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (3): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321826: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (4): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321832: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (5): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321837: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (6): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.321842: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (7): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.346982: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2199990000 Hz
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.349747: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x558c363c6c50 executing computations on platform Host. Devices:
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.349771: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.372965: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:8a:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.374284: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 1 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:89:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.375731: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 2 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:86:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.377059: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 3 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:85:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.378577: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 4 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:09:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.380036: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 5 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:08:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.381466: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 6 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:05:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.382832: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 7 with properties: 
+[2m[36m(pid=10241)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10241)[0m pciBusID: 0000:04:00.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.382923: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.384183: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.385333: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.385570: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.386979: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388080: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10.0
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388230: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Could not dlopen library 'libcudnn.so.7'; dlerror: libcudnn.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda-10.0/lib64
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388244: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1663] Cannot dlopen some GPU libraries. Skipping registering GPU devices...
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388706: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388718: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 1 2 3 4 5 6 7 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388727: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N Y Y Y N N N N 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388733: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 1:   Y N Y Y N N N N 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388754: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 2:   Y Y N Y N N N N 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388759: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 3:   Y Y Y N N N N N 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388765: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 4:   N N N N N Y Y Y 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388770: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 5:   N N N N Y N Y Y 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388775: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 6:   N N N N Y Y N Y 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.388780: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 7:   N N N N Y Y Y N 
+[2m[36m(pid=10241)[0m 2019-07-13 21:04:54.779386: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
+[2m[36m(pid=10241)[0m I0713 21:04:54.824171 140577814738688 train.py:30] training for iteration: 0
+[2m[36m(pid=10241)[0m I0713 21:04:54.824576 140577814738688 model.py:112] steps per epoch: 463
+[2m[36m(pid=10241)[0m I0713 21:04:54.860836 140577814738688 model.py:118] lr of 0.1 for epoch 0
+[2m[36m(pid=10241)[0m W0713 21:04:54.861073 140577814738688 deprecation.py:323] From /data/zwy/hack_pba_tensorflow/pba/model.py:125: Variable.load (from tensorflow.python.ops.variables) is deprecated and will be removed in a future version.
+[2m[36m(pid=10241)[0m Instructions for updating:
+[2m[36m(pid=10241)[0m Prefer Variable.assign which has equivalent behavior in 2.X.
+[2m[36m(pid=10241)[0m I0713 21:04:54.894392 140577814738688 model.py:127] Training 0/463
+[2m[36m(pid=10241)[0m I0713 22:46:11.768537 140577814738688 model.py:127] Training 20/463
+[2m[36m(pid=10241)[0m I0714 00:26:54.240397 140577814738688 model.py:127] Training 40/463
+[2m[36m(pid=10241)[0m I0714 02:07:36.315833 140577814738688 model.py:127] Training 60/463
+[2m[36m(pid=10241)[0m I0714 03:49:02.580640 140577814738688 model.py:127] Training 80/463
+[2m[36m(pid=10241)[0m I0714 05:29:38.690253 140577814738688 model.py:127] Training 100/463
+[2m[36m(pid=10241)[0m I0714 07:11:00.694906 140577814738688 model.py:127] Training 120/463
+[2m[36m(pid=10241)[0m I0714 08:52:40.477297 140577814738688 model.py:127] Training 140/463
+[2m[36m(pid=10241)[0m I0714 10:32:40.649704 140577814738688 model.py:127] Training 160/463
+[2m[36m(pid=10241)[0m I0714 12:13:25.492634 140577814738688 model.py:127] Training 180/4632019-07-15 12:11:16,282	ERROR trial_runner.py:487 -- Error processing event.
+Traceback (most recent call last):
+  File "/home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/trial_runner.py", line 436, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/ray_trial_executor.py", line 323, in fetch_result
+    result = ray.get(trial_future[0])
+  File "/home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/worker.py", line 2195, in get
+    raise value
+ray.exceptions.RayTaskError: [36mray_RayModel:train()[39m (pid=10241, host=GPU-239)
+  File "/home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/ray/tune/trainable.py", line 150, in train
+    result = self._train()
+  File "/data/zwy/hack_pba_tensorflow/pba/train.py", line 31, in _train
+    train_acc, val_acc = self.trainer.run_model(self._iteration)
+  File "/data/zwy/hack_pba_tensorflow/pba/model.py", line 413, in run_model
+    if self.hparams.validation_size > 0:
+AttributeError: 'HParams' object has no attribute 'validation_size'
+
+2019-07-15 12:11:16,284	INFO ray_trial_executor.py:187 -- Destroying actor for trial RayModel_0. If your trainable is slow to initialize, consider setting reuse_actors=True to reduce actor creation overheads.
+2019-07-15 12:11:16,286	INFO trial_runner.py:524 -- Attempting to recover trial state from last checkpoint.
+
+[2m[36m(pid=10241)[0m I0714 13:54:34.291812 140577814738688 model.py:127] Training 200/463
+[2m[36m(pid=10241)[0m I0714 15:35:18.586307 140577814738688 model.py:127] Training 220/463
+[2m[36m(pid=10241)[0m I0714 17:16:17.406621 140577814738688 model.py:127] Training 240/463
+[2m[36m(pid=10241)[0m I0714 18:58:09.330238 140577814738688 model.py:127] Training 260/463
+[2m[36m(pid=10241)[0m I0714 20:39:46.997361 140577814738688 model.py:127] Training 280/463
+[2m[36m(pid=10241)[0m I0714 22:21:39.031381 140577814738688 model.py:127] Training 300/463
+[2m[36m(pid=10241)[0m I0715 00:03:02.192990 140577814738688 model.py:127] Training 320/463
+[2m[36m(pid=10241)[0m I0715 01:44:27.580557 140577814738688 model.py:127] Training 340/463
+[2m[36m(pid=10241)[0m I0715 03:26:04.810556 140577814738688 model.py:127] Training 360/463
+[2m[36m(pid=10241)[0m I0715 05:08:01.636897 140577814738688 model.py:127] Training 380/463
+[2m[36m(pid=10241)[0m I0715 06:50:05.355128 140577814738688 model.py:127] Training 400/463
+[2m[36m(pid=10241)[0m I0715 08:31:25.379228 140577814738688 model.py:127] Training 420/463
+[2m[36m(pid=10241)[0m I0715 10:13:44.970363 140577814738688 model.py:127] Training 440/463
+[2m[36m(pid=10241)[0m I0715 11:56:06.441506 140577814738688 model.py:127] Training 460/463
+== Status ==
+PopulationBasedTraining: 0 checkpoints, 0 perturbs
+Resources requested: 40/40 CPUs, 8/8 GPUs
+Memory usage on this node: 11.8/270.4 GB
+Result logdir: /data/zwy/hack_pba_tensorflow/results/hack_first
+Number of trials: 8 ({'RUNNING': 1, 'PENDING': 7})
+PENDING trials:
+ - RayModel_1:	PENDING
+ - RayModel_2:	PENDING
+ - RayModel_3:	PENDING
+ - RayModel_4:	PENDING
+ - RayModel_5:	PENDING
+ - RayModel_6:	PENDING
+ - RayModel_7:	PENDING
+RUNNING trials:
+ - RayModel_0:	RUNNING, 1 failures: /data/zwy/hack_pba_tensorflow/results/hack_first/RayModel_0_2019-07-13_21-04-18_0z_d0ey/error_2019-07-15_12-11-16.txt
+
+[2m[36m(pid=10241)[0m I0715 12:11:16.255763 140577814738688 model.py:144] Train accuracy: 0.5015692494600432
+[2m[36m(pid=10241)[0m I0715 12:11:16.277230 140577814738688 model.py:394] Finished epoch: 0
+[2m[36m(pid=10241)[0m I0715 12:11:16.277409 140577814738688 model.py:396] Epoch time(min): 2346.357547831535
+[2m[36m(pid=10222)[0m WARNING: Logging before flag parsing goes to stderr.
+[2m[36m(pid=10222)[0m W0715 12:11:18.549647 140575498528512 lazy_loader.py:50] 
+[2m[36m(pid=10222)[0m The TensorFlow contrib module will not be included in TensorFlow 2.0.
+[2m[36m(pid=10222)[0m For more information, please see:
+[2m[36m(pid=10222)[0m   * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+[2m[36m(pid=10222)[0m   * https://github.com/tensorflow/addons
+[2m[36m(pid=10222)[0m   * https://github.com/tensorflow/io (for I/O related ops)
+[2m[36m(pid=10222)[0m If you depend on functionality not listed there, please file an issue.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:18.992338 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.set_verbosity is deprecated. Please use tf.compat.v1.logging.set_verbosity instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:18.992665 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:23: The name tf.logging.INFO is deprecated. Please use tf.compat.v1.logging.INFO instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:18.992761 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/train.py:24: The name tf.logging.info is deprecated. Please use tf.compat.v1.logging.info instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m I0715 12:11:18.992816 140575498528512 train.py:24] calling setup
+[2m[36m(pid=10222)[0m I0715 12:11:18.993029 140575498528512 data_utils.py:139] using HP Policy, policy: [('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0), ('AutoContrast', 0.0, 0), ('Equalize', 0.0, 0), ('Invert', 0.0, 0), ('Rotate', 0.0, 0), ('Posterize', 0.0, 0), ('Solarize', 0.0, 0), ('Color', 0.0, 0), ('Contrast', 0.0, 0), ('Brightness', 0.0, 0), ('Sharpness', 0.0, 0), ('ShearX', 0.0, 0), ('ShearY', 0.0, 0), ('TranslateX', 0.0, 0), ('TranslateY', 0.0, 0), ('Cutout', 0.0, 0)]
+[2m[36m(pid=10222)[0m W0715 12:11:23.916984 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:371: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:23.926376 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:217: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:23.928097 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:236: The name tf.train.get_or_create_global_step is deprecated. Please use tf.compat.v1.train.get_or_create_global_step instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:23.932759 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:35: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:23.941811 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:85: The name tf.GraphKeys is deprecated. Please use tf.compat.v1.GraphKeys instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:24.086047 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:191: The name tf.nn.avg_pool is deprecated. Please use tf.nn.avg_pool2d instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:25.081817 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/custom_ops.py:181: The name tf.nn.xw_plus_b is deprecated. Please use tf.compat.v1.nn.xw_plus_b instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:25.084383 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/autoaugment/helper_utils.py:29: The name tf.losses.softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.softmax_cross_entropy instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:25.114623 140575498528512 deprecation.py:323] From /home/linkface/software/anaconda3/envs/pytorchlatest/lib/python3.6/site-packages/tensorflow/python/ops/losses/losses_impl.py:121: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+[2m[36m(pid=10222)[0m Instructions for updating:
+[2m[36m(pid=10222)[0m Use tf.where in 2.0, which has the same broadcast rule as np.where
+[2m[36m(pid=10222)[0m W0715 12:11:25.123456 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:262: The name tf.trainable_variables is deprecated. Please use tf.compat.v1.trainable_variables instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m I0715 12:11:25.125441 140575498528512 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=10222)[0m W0715 12:11:25.848977 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:275: The name tf.summary.scalar is deprecated. Please use tf.compat.v1.summary.scalar instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:25.850374 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:279: The name tf.train.MomentumOptimizer is deprecated. Please use tf.compat.v1.train.MomentumOptimizer instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m W0715 12:11:26.271051 140575498528512 deprecation_wrapper.py:119] From /data/zwy/hack_pba_tensorflow/pba/model.py:254: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+[2m[36m(pid=10222)[0m 
+[2m[36m(pid=10222)[0m I0715 12:11:26.726019 140575498528512 model.py:265] number of trainable params: 1455826
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:26.957607: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:26.970022: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873903: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55b9a8d7f090 executing computations on platform CUDA. Devices:
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873944: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873952: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (1): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873957: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (2): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873963: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (3): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873968: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (4): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873973: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (5): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873979: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (6): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.873984: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (7): Tesla V100-PCIE-16GB, Compute Capability 7.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.898931: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2199990000 Hz
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.901672: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55b9a8ef0000 executing computations on platform Host. Devices:
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.901693: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.925146: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:04:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.926609: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 1 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:05:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.928136: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 2 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:08:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.929516: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 3 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:09:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.930939: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 4 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:85:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.932294: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 5 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:86:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.933672: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 6 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:89:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.935075: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 7 with properties: 
+[2m[36m(pid=10222)[0m name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+[2m[36m(pid=10222)[0m pciBusID: 0000:8a:00.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.935187: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.936548: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.937658: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.937966: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.939520: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.940734: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10.0
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.940836: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Could not dlopen library 'libcudnn.so.7'; dlerror: libcudnn.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda-10.0/lib64
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.940848: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1663] Cannot dlopen some GPU libraries. Skipping registering GPU devices...
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941259: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941274: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 1 2 3 4 5 6 7 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941282: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N Y Y Y N N N N 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941288: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 1:   Y N Y Y N N N N 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941294: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 2:   Y Y N Y N N N N 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941299: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 3:   Y Y Y N N N N N 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941305: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 4:   N N N N N Y Y Y 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941310: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 5:   N N N N Y N Y Y 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941316: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 6:   N N N N Y Y N Y 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:34.941322: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 7:   N N N N Y Y Y N 
+[2m[36m(pid=10222)[0m 2019-07-15 12:11:35.335612: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
