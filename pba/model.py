@@ -198,12 +198,18 @@ def eval_child_model(session, model, dataset, mode):
 
     correct = 0
     count = 0
-    for batch in loader:
+    for i, batch in enumerate(loader):
+        images, labels = batch
+        images = images.numpy()
+        images = images.transpose(0, 2, 3, 1)
+        labels = labels.numpy()
+        batchsize = labels.size
+        labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
         preds = session.run(
             model.predictions,
             feed_dict={
-                model.images: batch[0],
-                model.labels: batch[1],
+                model.images: images,
+                model.labels: labels,
             })
         correct += np.sum(
             np.equal(np.argmax(batch[1], 1), np.argmax(preds, 1)))

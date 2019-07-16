@@ -174,15 +174,18 @@ class DataSet(object):
         self.train_loader = DataLoader(CsvDataset(train_data_root, train_csv_path, transform=transform),
                                        batch_size=self.hparams.batch_size,
                                        shuffle=True,
-                                       num_workers=2)
+                                       num_workers=2,
+                                       drop_last=True)
         self.val_loader = DataLoader(CsvDataset(val_data_root, val_csv_path, transform=transform),
                                      batch_size=self.hparams.batch_size,
                                      shuffle=False,
-                                     num_workers=2)
+                                     num_workers=2,
+                                     drop_last=True)
         self.test_loader = DataLoader(CsvDataset(test_data_root, test_csv_path, transform=transform),
                                       batch_size=self.hparams.test_batch_size,
                                       shuffle=False,
-                                      num_workers=2)
+                                      num_workers=2,
+                                      drop_last=True)
         self.__train_iter = iter(self.train_loader)
 
         self.num_classes = 2
