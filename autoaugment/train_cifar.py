@@ -301,7 +301,7 @@ class CifarModelTrainer(object):
       self._session = None
 
   def _build_models(self):
-    """Builds the image models for train and eval."""
+    """Builds the image autoaugment for train and eval."""
     # Determine if we should build the train and eval model. When using
     # distributed training we only want to build one or the other and not both.
     with tf.variable_scope('model', use_resource=False):

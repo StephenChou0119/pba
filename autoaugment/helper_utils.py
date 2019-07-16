@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Helper functions used for training AutoAugment models."""
+"""Helper functions used for training AutoAugment autoaugment."""
 
 from __future__ import absolute_import
 from __future__ import division

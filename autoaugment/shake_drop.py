@@ -121,7 +121,7 @@ def build_shake_drop_model(images, num_classes, is_training):
   start_channel = 16
   add_channel = alpha / (3 * n)
 
-  # Building the models
+  # Building the autoaugment
   x = images
   x = ops.conv2d(x, 16, 3, scope='init_conv')
   x = ops.batch_norm(x, scope='init_bn')

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Helper functions used for training PBA models."""
+"""Helper functions used for training PBA autoaugment."""
 
 from __future__ import absolute_import
 from __future__ import division
