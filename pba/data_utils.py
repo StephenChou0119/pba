@@ -155,20 +155,20 @@ class DataSet(object):
         Args:
             hparams: tf.hparams object.
         """
-        # train_data_root = '/data/zwy/datasetv4/align/train'
-        # train_csv_path = '/data/zwy/datasetv4/align/datasetv5_train.csv'
-        # val_data_root = '/data/zwy/datasetv4/align/train'
-        # val_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
-        # test_data_root = '/data/zwy/datasetv4/align/train'
-        # test_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
+        train_data_root = '/data/zwy/datasetv4/align/train'
+        train_csv_path = '/data/zwy/datasetv4/align/datasetv5_train.csv'
+        val_data_root = '/data/zwy/datasetv4/align/train'
+        val_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
+        test_data_root = '/data/zwy/datasetv4/align/train'
+        test_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
 
         #debug
-        train_data_root = '/data/zwy/datasetv4/align/train'
-        train_csv_path = '/data/zwy/hack_pba_tensorflow/train100.csv'
-        val_data_root = '/data/zwy/datasetv4/align/train'
-        val_csv_path = '/data/zwy/hack_pba_tensorflow/val30.csv'
-        test_data_root = '/data/zwy/datasetv4/align/train'
-        test_csv_path = '/data/zwy/hack_pba_tensorflow/test30.csv'
+        # train_data_root = '/data/zwy/datasetv4/align/train'
+        # train_csv_path = '/data/zwy/hack_pba_tensorflow/train100.csv'
+        # val_data_root = '/data/zwy/datasetv4/align/train'
+        # val_csv_path = '/data/zwy/hack_pba_tensorflow/val30.csv'
+        # test_data_root = '/data/zwy/datasetv4/align/train'
+        # test_csv_path = '/data/zwy/hack_pba_tensorflow/test30.csv'
         import torchvision.transforms.functional as TF
         import torchvision.transforms as transforms
         crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))

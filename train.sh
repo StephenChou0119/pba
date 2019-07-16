@@ -1,0 +1,1 @@
+nohup python $PWD/pba/train.py --local_dir $PWD/results/ --model_name resnet --checkpoint_freq 5 --gpu 4 --cpu 5 --use_hp_policy --hp_policy $PWD/schedules/hack.txt --hp_policy_epochs 10 --epochs 10 --bs 256 --test_bs 256  --name resnet_train --resnet_size 20 --lr 0.1 --wd 0.0005 --num_samples 1 >> train_resnet.txt 2>&1 &

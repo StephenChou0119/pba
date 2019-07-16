@@ -155,7 +155,6 @@ def run_epoch_training(session, model, dataset, curr_epoch):
 
         train_images, train_labels = dataset.next_batch(curr_epoch)
 
-
         _, step, preds = session.run(
             [model.train_op, model.global_step, model.predictions],
             feed_dict={
