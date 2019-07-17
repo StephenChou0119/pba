@@ -32,6 +32,7 @@ import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
 from models.wrn import build_wrn_model
 from models.resnet import build_resnet_model
+from models.efficientnet_builder import build_model as build_efficientnet
 
 arg_scope = tf.contrib.framework.arg_scope
 
@@ -118,6 +119,10 @@ def build_model(inputs, num_classes, is_training, hparams):
         elif hparams.model_name == 'resnet':
             logits = build_resnet_model(inputs, num_classes, hparams,
                                         is_training)
+        elif hparams.model_name == 'efficientnet-b0':
+            logits,_ = build_efficientnet(inputs, 'efficientnet-b0',True,
+                                        override_params={'num_classes':2}
+                                        )
         else:
             raise ValueError("Unknown model name.")
     return logits
@@ -169,7 +174,6 @@ def run_epoch_training(session, model, dataset, curr_epoch):
 
     tf.logging.info('Train accuracy: {}'.format(train_accuracy))
     return train_accuracy
-
 
 
 def eval_child_model(session, model, dataset, mode):

@@ -16,7 +16,7 @@ def create_parser(state):
         '--model_name',
         default='wrn_28_10',
         choices=('wrn_28_10', 'wrn_40_2', 'shake_shake_32', 'shake_shake_96',
-                 'shake_shake_112', 'pyramid_net', 'resnet'))
+                 'shake_shake_112', 'pyramid_net', 'resnet', 'efficientnet-b0'))
     parser.add_argument('--local_dir', type=str, default='/tmp/ray_results/',  help='Ray directory.')
     parser.add_argument('--restore', type=str, default=None, help='If specified, tries to restore from given path.')
     parser.add_argument('--checkpoint_freq', type=int, default=50, help='Checkpoint frequency.')
@@ -153,6 +153,8 @@ def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
     elif FLAGS.model_name == 'pyramid_net':
         hparams.add_hparam('model_name', 'pyramid_net')
         hparams.set_hparam('batch_size', 64)
+    elif FLAGS.model_name == 'efficientnet-b0':
+        hparams.add_hparam('model_name', 'efficientnet-b0')
     else:
         raise ValueError('Not Valid Model Name: %s' % FLAGS.model_name)
     if FLAGS.epochs > 0:
