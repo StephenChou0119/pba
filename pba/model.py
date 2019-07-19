@@ -26,13 +26,8 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from autoaugment.shake_drop import build_shake_drop_model
-from autoaugment.shake_shake import build_shake_shake_model
 import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
-from models.wrn import build_wrn_model
-from models.resnet import build_resnet_model
-from models.efficientnet_builder import build_model as build_efficientnet
 
 arg_scope = tf.contrib.framework.arg_scope
 
@@ -109,22 +104,7 @@ def build_model(inputs, num_classes, is_training, hparams):
     if len(scopes) != 1:
         raise ValueError('Nested scopes depreciated in py3.')
     with scopes[0]:
-        if hparams.model_name == 'pyramid_net':
-            logits = build_shake_drop_model(inputs, num_classes, is_training)
-        elif hparams.model_name == 'wrn':
-            logits = build_wrn_model(inputs, num_classes, hparams.wrn_size)
-        elif hparams.model_name == 'shake_shake':
-            logits = build_shake_shake_model(inputs, num_classes, hparams,
-                                             is_training)
-        elif hparams.model_name == 'resnet':
-            logits = build_resnet_model(inputs, num_classes, hparams,
-                                        is_training)
-        elif hparams.model_name == 'efficientnet-b0':
-            logits,_ = build_efficientnet(inputs, 'efficientnet-b0',True,
-                                        override_params={'num_classes':2}
-                                        )
-        else:
-            raise ValueError("Unknown model name.")
+        logits = hparams.build_model(inputs, num_classes, is_training)
     return logits
 
 
@@ -449,8 +429,6 @@ class ModelTrainer(object):
         tf.logging.info('Train Acc: {}, Valid Acc: {}'.format(
             training_accuracy, valid_accuracy))
         return training_accuracy, valid_accuracy
-
-
 
     def reset_config(self, new_hparams):
         self.hparams = new_hparams

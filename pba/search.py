@@ -80,7 +80,7 @@ def main(_):
 
     run_experiments(
         {
-            configs.name: train_spec
+            configs.search_name: train_spec
         },
         scheduler=pbt,
         reuse_actors=True,

@@ -57,14 +57,50 @@ def shuffle_data(data, labels):
 
 class DataSet(object):
     """Dataset object that produces augmented training and eval data.
+    Load raw data from hack dataset.
+
+        Assumes data is in NHWC format.
     """
 
     def __init__(self, hparams):
+        self.__train_data_root = hparams.train_data_root
+        self.__train_csv_path = hparams.train_csv_path
+        self.__val_data_root = hparams.val_data_root
+        self.__val_csv_path = hparams.val_csv_path
+        self.__test_data_root = hparams.test_data_root
+        self.__test_csv_path = hparams.test_csv_path
+
+        self.__transform = hparams.transform
+        self.__cutout_size = hparams.cutout_size
+        self.__padding_size = hparams.padding_size
+        self.image_size = hparams.size_of_image
+        self.num_classes = hparams.num_of_classes
         self.hparams = hparams
         self.epochs = 0
 
         self.parse_policy(hparams)
-        self.load_data()
+        self.train_loader = DataLoader(
+            CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
+            batch_size=self.hparams.batch_size,
+            shuffle=True,
+            num_workers=2,
+            drop_last=True)
+        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
+                                     batch_size=self.hparams.test_batch_size,
+                                     shuffle=False,
+                                     num_workers=2,
+                                     drop_last=True)
+        self.test_loader = DataLoader(
+            CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
+            batch_size=self.hparams.test_batch_size,
+            shuffle=False,
+            num_workers=2,
+            drop_last=True)
+        self.__train_iter = iter(self.train_loader)
+
+        self.num_train = len(self.train_loader)
+        self.num_val = len(self.val_loader)
+        self.num_test = len(self.test_loader)
 
     def parse_policy(self, hparams):
         """Parses policy schedule from input, which can be a list, list of lists, text file, or pickled list.
@@ -139,7 +175,7 @@ class DataSet(object):
     def load_data(self):
         """Loadrawdatafromhackdataset.
 
-        AssumesdataisinNHWCformat.
+        Assumes data is in NHWC format.
 
         Populates:
         self.train_loader:Training image and label data.
@@ -154,62 +190,27 @@ class DataSet(object):
         Args:
         hparams:tf.hparams object.
         """
-        # train
-        # train_data_root = '/data/zwy/datasetv4/align/train'
-        # train_csv_path = '/data/zwy/datasetv4/align/datasetv5_train.csv'
-        # val_data_root = '/data/zwy/datasetv4/align/train'
-        # val_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
-        # test_data_root = '/data/zwy/datasetv4/align/train'
-        # test_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
 
-        #debug
-        # train_data_root = '/data/zwy/datasetv4/align/train'
-        # train_csv_path = '/data/zwy/hack_pba_tensorflow/train100.csv'
-        # val_data_root = '/data/zwy/datasetv4/align/train'
-        # val_csv_path = '/data/zwy/hack_pba_tensorflow/val30.csv'
-        # test_data_root = '/data/zwy/datasetv4/align/train'
-        # test_csv_path = '/data/zwy/hack_pba_tensorflow/test30.csv'
-
-        #search
-        train_data_root = '/data/zwy/datasetv4/align/train'
-        train_csv_path = '/data/zwy/datasetv4/align/search.csv'
-        val_data_root = '/data/zwy/datasetv4/align/train'
-        val_csv_path = '/data/zwy/datasetv4/align/search_val_jdb.csv'
-        test_data_root = '/data/zwy/datasetv4/align/train'
-        test_csv_path = '/data/zwy/datasetv4/align/search_test_jdb.csv'
-
-        import torchvision.transforms.functional as TF
-        import torchvision.transforms as transforms
-        crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
-        transform = transforms.Compose(
-            [
-                crop,
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-            ]
-        )
-        self.train_loader = DataLoader(CsvDataset(train_data_root, train_csv_path, transform=transform),
+        self.train_loader = DataLoader(CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
                                        batch_size=self.hparams.batch_size,
                                        shuffle=True,
                                        num_workers=2,
                                        drop_last=True)
-        self.val_loader = DataLoader(CsvDataset(val_data_root, val_csv_path, transform=transform),
+        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
                                      batch_size=self.hparams.test_batch_size,
                                      shuffle=False,
                                      num_workers=2,
                                      drop_last=True)
-        self.test_loader = DataLoader(CsvDataset(test_data_root, test_csv_path, transform=transform),
+        self.test_loader = DataLoader(CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
                                       batch_size=self.hparams.test_batch_size,
                                       shuffle=False,
                                       num_workers=2,
                                       drop_last=True)
         self.__train_iter = iter(self.train_loader)
 
-        self.num_classes = 2
         self.num_train = len(self.train_loader)
         self.num_val = len(self.val_loader)
         self.num_test = len(self.test_loader)
-        self.image_size = 224
 
     def next_batch(self, iteration=None):
         """Return the next minibatch of augmented data."""
@@ -247,12 +248,12 @@ class DataSet(object):
                 raise ValueError('Unknown policy.')
             final_img = self.augmentation_transforms.random_flip(
                 self.augmentation_transforms.zero_pad_and_crop(
-                    final_img, 16))
+                    final_img, self.__padding_size))
 
             # Apply cutout
             if not self.hparams.no_cutout:
                 final_img = self.augmentation_transforms.cutout_numpy(
-                    final_img, size=56)
+                    final_img, size=self.__cutout_size)
             final_imgs.append(final_img)
         batched_data = (np.array(final_imgs, np.float32), labels)
         return batched_data
