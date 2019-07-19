@@ -57,7 +57,7 @@ class RayModel(Trainable):
 
 
 def main(_):
-    args = create_parser("train")  # pylint: disable=invalid-name
+    args = create_parser()  # pylint: disable=invalid-name
     hparams = create_hparams("train", args)
 
     train_spec = {
@@ -79,7 +79,7 @@ def main(_):
         train_spec["restore"] = args.restore
 
     ray.init()
-    run_experiments({args.name: train_spec})
+    run_experiments({args.train_name: train_spec})
 
 
 if __name__ == "__main__":

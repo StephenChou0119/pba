@@ -137,23 +137,22 @@ class DataSet(object):
         return
 
     def load_data(self):
-        """Load raw data from hack dataset.
+        """Loadrawdatafromhackdataset.
 
-        Assumes data is in NCHW format.
+        AssumesdataisinNHWCformat.
 
         Populates:
-            self.train_images: Training image data.
-            self.train_labels: Training ground truth labels.
-            self.val_images: Validation/holdout image data.
-            self.val_labels: Validation/holdout ground truth labels.
-            self.test_images: Testing image data.
-            self.test_labels: Testing ground truth labels.
-            self.num_classes: Number of classes.
-            self.num_train: Number of training examples.
-            self.image_size: Width/height of image.
+        self.train_loader:Training image and label data.
+        self.val_loader:Validation/holdout image and label data.
+        self.test_loader:Testing image and label data.
+        self.num_classes:Number of classes.
+        self.num_train:Number of training examples.
+        self.num_val:Number of validating examples.
+        self.num_test:Number of testing examples.
+        self.image_size:Width/height of image.
 
         Args:
-            hparams: tf.hparams object.
+        hparams:tf.hparams object.
         """
         # train
         # train_data_root = '/data/zwy/datasetv4/align/train'
@@ -232,23 +231,20 @@ class DataSet(object):
         labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
 
         for data in images:
-            if not self.hparams.no_aug:
-                # apply PBA policy)
-                if isinstance(self.policy[0], list):
-                    final_img = self.augmentation_transforms.apply_policy(
-                        self.policy[iteration],
-                        data,
-                        image_size=self.image_size)
-                elif isinstance(self.policy, list):
-                    # policy schedule
-                    final_img = self.augmentation_transforms.apply_policy(
-                        self.policy,
-                        data,
-                        image_size=self.image_size)
-                else:
-                    raise ValueError('Unknown policy.')
+            # apply PBA policy)
+            if isinstance(self.policy[0], list):
+                final_img = self.augmentation_transforms.apply_policy(
+                    self.policy[iteration],
+                    data,
+                    image_size=self.image_size)
+            elif isinstance(self.policy, list):
+                # policy schedule
+                final_img = self.augmentation_transforms.apply_policy(
+                    self.policy,
+                    data,
+                    image_size=self.image_size)
             else:
-                final_img = data
+                raise ValueError('Unknown policy.')
             final_img = self.augmentation_transforms.random_flip(
                 self.augmentation_transforms.zero_pad_and_crop(
                     final_img, 16))

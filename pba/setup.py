@@ -7,11 +7,16 @@ import random
 import tensorflow as tf
 
 from pba.augmentation_transforms_hp import NUM_HP_TRANSFORM
+from mmcv import Config
 
 
-def create_parser(state):
+def create_parser():
     """Create arg parser for flags."""
     parser = argparse.ArgumentParser()
+    parser.add_argument('config', help='path to config file')
+    args = parser.parse_args()
+    config = Config(args.config)
+    return config
     parser.add_argument(
         '--model_name',
         default='wrn_28_10',
@@ -77,88 +82,72 @@ def create_parser(state):
     return args
 
 
-def create_hparams(state, FLAGS):  # pylint: disable=invalid-name
+def create_hparams(state, configs):  # pylint: disable=invalid-name
     """Creates hyperparameters to pass into Ray config.
 
   Different options depending on search or eval mode.
 
   Args:
     state: a string, 'train' or 'search'.
-    FLAGS: parsed command line flags.
+    configs: parsed command line flags.
 
   Returns:
     tf.hparams object.
   """
     hparams = tf.contrib.training.HParams(
-        batch_size=FLAGS.bs,
+        batch_size=configs.batch_size,
         gradient_clipping_by_global_norm=5.0,
-        explore=FLAGS.explore,
-        no_cutout=FLAGS.no_cutout,
-        lr=FLAGS.lr,
-        weight_decay_rate=FLAGS.wd,
-        test_batch_size=FLAGS.test_bs)
+        no_cutout=configs.no_cutout,
+        lr=configs.learning_rate,
+        weight_decay_rate=configs.weight_decay,
+        test_batch_size=configs.test_batch_size)
 
     if state == 'train':
-        hparams.add_hparam('no_aug', FLAGS.no_aug)
-        hparams.add_hparam('use_hp_policy', FLAGS.use_hp_policy)
-        if FLAGS.use_hp_policy:
-            if FLAGS.hp_policy == 'random':
-                tf.logging.info('RANDOM SEARCH')
-                parsed_policy = []
-                for i in range(NUM_HP_TRANSFORM * 4):
-                    if i % 2 == 0:
-                        parsed_policy.append(random.randint(0, 10))
-                    else:
-                        parsed_policy.append(random.randint(0, 9))
-            elif FLAGS.hp_policy.endswith('.txt') or FLAGS.hp_policy.endswith(
-                    '.p'):
-                # will be loaded in in data_utils
-                parsed_policy = FLAGS.hp_policy
-            else:
-                # parse input into a fixed augmentation policy
-                parsed_policy = FLAGS.hp_policy.split(', ')
-                parsed_policy = [int(p) for p in parsed_policy]
-            hparams.add_hparam('hp_policy', parsed_policy)
-            hparams.add_hparam('hp_policy_epochs', FLAGS.hp_policy_epochs)
+        if configs.hp_policy.endswith('.txt') or configs.hp_policy.endswith(
+                '.p'):
+            # will be loaded in in data_utils
+            parsed_policy = configs.hp_policy
+        else:
+            raise ValueError('policy file must end with .txt or .p')
+        hparams.add_hparam('hp_policy', parsed_policy)
+        hparams.add_hparam('hp_policy_epochs', configs.hp_policy_epochs)
     elif state == 'search':
-        hparams.add_hparam('no_aug', False)
-        hparams.add_hparam('use_hp_policy', True)
         # default start value of 0
         hparams.add_hparam('hp_policy',
                            [0 for _ in range(4 * NUM_HP_TRANSFORM)])
     else:
         raise ValueError('unknown state')
 
-    if FLAGS.model_name == 'wrn_40_2':
+    if configs.model_name == 'wrn_40_2':
         hparams.add_hparam('model_name', 'wrn')
         hparams.add_hparam('wrn_size', 32)
         hparams.add_hparam('wrn_depth', 40)
-    elif FLAGS.model_name == 'wrn_28_10':
+    elif configs.model_name == 'wrn_28_10':
         hparams.add_hparam('model_name', 'wrn')
         hparams.add_hparam('wrn_size', 160)
         hparams.add_hparam('wrn_depth', 28)
-    elif FLAGS.model_name == 'resnet':
+    elif configs.model_name == 'resnet':
         hparams.add_hparam('model_name', 'resnet')
         hparams.add_hparam('resnet_size', 20)
-        hparams.add_hparam('num_filters', FLAGS.resnet_size)
-    elif FLAGS.model_name == 'shake_shake_32':
+        hparams.add_hparam('num_filters', configs.resnet_size)
+    elif configs.model_name == 'shake_shake_32':
         hparams.add_hparam('model_name', 'shake_shake')
         hparams.add_hparam('shake_shake_widen_factor', 2)
-    elif FLAGS.model_name == 'shake_shake_96':
+    elif configs.model_name == 'shake_shake_96':
         hparams.add_hparam('model_name', 'shake_shake')
         hparams.add_hparam('shake_shake_widen_factor', 6)
-    elif FLAGS.model_name == 'shake_shake_112':
+    elif configs.model_name == 'shake_shake_112':
         hparams.add_hparam('model_name', 'shake_shake')
         hparams.add_hparam('shake_shake_widen_factor', 7)
-    elif FLAGS.model_name == 'pyramid_net':
+    elif configs.model_name == 'pyramid_net':
         hparams.add_hparam('model_name', 'pyramid_net')
         hparams.set_hparam('batch_size', 64)
-    elif FLAGS.model_name == 'efficientnet-b0':
+    elif configs.model_name == 'efficientnet-b0':
         hparams.add_hparam('model_name', 'efficientnet-b0')
     else:
-        raise ValueError('Not Valid Model Name: %s' % FLAGS.model_name)
-    if FLAGS.epochs > 0:
-        epochs = FLAGS.epochs
+        raise ValueError('Not Valid Model Name: %s' % configs.model_name)
+    if configs.epochs > 0:
+        epochs = configs.epochs
     else:
         raise ValueError('epochs must larger than 0')
     hparams.add_hparam('num_epochs', epochs)
