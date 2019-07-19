@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 """Train and evaluate autoaugment using augmentation schedules."""
-"""Train and evaluate autoaugment using augmentation schedules."""
 
 
 import os
