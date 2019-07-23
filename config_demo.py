@@ -8,7 +8,7 @@ learning_rate = 0.1
 weight_decay = 0.0005
 batch_size = 128
 test_batch_size = 128
-num_samples = 16  # number of trials
+num_samples = 1  # number of trials
 
 # name of directory created in local_dir to store search temp files, checkpoints, policies.
 search_name = 'efficientnetb0_search'
@@ -19,7 +19,9 @@ padding_size = 16
 cutout_size = 56
 no_cutout = False
 # arguments for train
-hp_policy = '../schedules/rcifar10_16_wrn.txt'
+import os
+print(os.getcwd())
+hp_policy = '/data/zwy/hack_pba_tensorflow/schedules/jdb.txt'
 hp_policy_epochs = 100  # epochs should be able to divide evenly into hp_policy_epochs
 
 # arguments for search
@@ -28,12 +30,12 @@ perturbation_interval = 3
 # dataset and augmentation
 
 # train
-# train_data_root = '/data/zwy/datasetv4/align/train'
-# train_csv_path = '/data/zwy/datasetv4/align/datasetv5_train.csv'
-# val_data_root = '/data/zwy/datasetv4/align/train'
-# val_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
-# test_data_root = '/data/zwy/datasetv4/align/train'
-# test_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
+train_data_root = '/data/zwy/datasetv4/align/train'
+train_csv_path = '/data/zwy/datasetv4/align/datasetv5_train.csv'
+val_data_root = '/data/zwy/datasetv4/align/train'
+val_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
+test_data_root = '/data/zwy/datasetv4/align/train'
+test_csv_path = '/data/zwy/datasetv4/align/jdb.csv'
 
 #debug
 # train_data_root = '/data/zwy/datasetv4/align/train'
@@ -44,12 +46,12 @@ perturbation_interval = 3
 # test_csv_path = '/data/zwy/hack_pba_tensorflow/test30.csv'
 
 #search
-train_data_root = '/data/zwy/datasetv4/align/train'
-train_csv_path = '/data/zwy/datasetv4/align/search.csv'
-val_data_root = '/data/zwy/datasetv4/align/train'
-val_csv_path = '/data/zwy/datasetv4/align/search_val_jdb.csv'
-test_data_root = '/data/zwy/datasetv4/align/train'
-test_csv_path = '/data/zwy/datasetv4/align/search_test_jdb.csv'
+# train_data_root = '/data/zwy/datasetv4/align/train'
+# train_csv_path = '/data/zwy/datasetv4/align/search.csv'
+# val_data_root = '/data/zwy/datasetv4/align/train'
+# val_csv_path = '/data/zwy/datasetv4/align/search_val_jdb.csv'
+# test_data_root = '/data/zwy/datasetv4/align/train'
+# test_csv_path = '/data/zwy/datasetv4/align/search_test_jdb.csv'
 # preprocess
 import torchvision.transforms.functional as TF
 import torchvision.transforms as transforms
