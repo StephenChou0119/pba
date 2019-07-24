@@ -42,7 +42,7 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         cutout_size=configs.cutout_size,
         padding_size=configs.padding_size,
         size_of_image=configs.image_size,
-        num_of_classes=configs.num_classes, # Hyperparameter name is reserved: num_classes, image_size
+        num_of_classes=configs.num_classes,# Hyperparameter name is reserved: num_classes, image_size
         build_model=tune.function(configs.build_func),
     )
 
