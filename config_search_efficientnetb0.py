@@ -2,26 +2,26 @@ from models.efficientnet_builder import build_model as build_efficientnet
 local_dir = "/data/search_results/"  # Ray directory.
 restore = None  # if not None, tries to restore from given path.
 checkpoint_freq = 50
-cpu = 40  # cpu allocated by Ray for each trial
+cpu = 5  # cpu allocated by Ray for each trial
 gpu = 1  # gpu allocated by Ray for each trial
 epochs = 100  # number of epochs, must > 0
 learning_rate = 0.1
 weight_decay = 0.0005
 batch_size = 128
 test_batch_size = 128
-num_samples = 1  # number of trials
+num_samples = 16  # number of trials
 
 # name of directory created in local_dir to store search temp files, checkpoints, policies.
-search_name = 'efficientnetb0_search'
-train_name = 'efficientnetb0_train'
+search_name = 'efficientnetb0_alldata_search_test'
+train_name = 'efficientnetb0_alldata_train_test'
 
 # cifar crop padding size, cutout size
 padding_size = 16
 cutout_size = 56
-num_workers = 32
+num_workers = 5
 no_cutout = False
 # arguments for train
-hp_policy = '/data/zwy/hack_pba_tensorflow/schedules/jdb.txt'
+hp_policy = '/data/zwy/hack_pba_tensorflow/schedules/jdb_efficientnetb0.txt'
 hp_policy_epochs = 100  # epochs should be able to divide evenly into hp_policy_epochs
 
 # interval for moving top 25% to last 25%

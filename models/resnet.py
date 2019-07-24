@@ -389,13 +389,13 @@ def block_layer(inputs, filters, bottleneck, block_fn, blocks, strides,
     return tf.identity(inputs, name)
 
 
-def build_resnet_model(inputs, num_classes, hparams, training):
+def build_resnet_model(inputs, num_classes, resnet_size, training, ):
     """Creates a model for classifying an image.
 
   Args:
     inputs: Input tensor.
     num_classes: The number of classes used as labels.
-    hparams: tf.hparam object.
+    resnet_size: size of layers.
     training: Training or evaluation.
 
   Raises:
@@ -404,13 +404,11 @@ def build_resnet_model(inputs, num_classes, hparams, training):
   Returns:
     Output tensor.
   """
-    resnet_size = hparams.resnet_size
     if resnet_size % 6 != 2:
         raise ValueError('resnet_size must be 6n + 2:', resnet_size)
 
     # Kernel size is 3 and conv stride is 1.
     bottleneck = False
-    num_filters = hparams.num_filters
     first_pool_size = None
     first_pool_stride = None
     num_blocks = (resnet_size - 2) // 6
@@ -456,7 +454,7 @@ def build_resnet_model(inputs, num_classes, hparams, training):
         inputs = tf.identity(inputs, 'initial_max_pool')
 
     for i, num_blocks in enumerate(block_sizes):
-        num_filters = num_filters * (2**i)
+        num_filters = resnet_size * (2**i)
         inputs = block_layer(
             inputs=inputs,
             filters=num_filters,

@@ -390,7 +390,7 @@ solarize = TransformT('Solarize', _solarize_impl)
 
 def _cutout_pil_impl(pil_img, level, image_size):
     """Apply cutout to pil_img at the specified level."""
-    size = int_parameter(level, 20)
+    size = int_parameter(level, 140)
     if size <= 0:
         return pil_img
     img_height, img_width, num_channels = (image_size, image_size, 3)
@@ -399,7 +399,7 @@ def _cutout_pil_impl(pil_img, level, image_size):
     pixels = pil_img.load()  # create the pixel map
     for i in range(upper_coord[0], lower_coord[0]):  # for every col:
         for j in range(upper_coord[1], lower_coord[1]):  # For every row
-            pixels[i, j] = (125, 122, 113, 0)  # set the colour accordingly
+            pixels[i, j] = (130, 112, 102, 0)  # set the colour accordingly
     return pil_img
 
 
