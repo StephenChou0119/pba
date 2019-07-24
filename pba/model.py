@@ -138,7 +138,7 @@ def run_epoch_training(session, model, dataset, curr_epoch):
         if step % 20 == 0:
             tf.logging.info('Training {}/{}'.format(step, steps_per_epoch))
 
-        train_images, train_labels = dataset.next_batch(curr_epoch)
+        train_images, train_labels = dataset.next_batch()
 
         _, step, preds = session.run(
             [model.train_op, model.global_step, model.predictions],
@@ -423,6 +423,9 @@ class ModelTrainer(object):
 
     def run_model(self, curr_epoch):
         """Trains and evalutes the image model."""
+        # set curr_epoch for load data and apply pba
+        self.dataset.curr_epoch = curr_epoch
+        self.dataset.reset_dataloader()
         training_accuracy = self._run_training_loop(curr_epoch)
         valid_accuracy = self.eval_child_model(self.meval,
                                                    self.dataset, 'val')

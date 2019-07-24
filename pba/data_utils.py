@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import torchvision.transforms.functional as TF
+import torchvision.transforms as transforms
+from pba.cutout import Cutout
 import copy
 from pba.csv_dataset import CsvDataset
 try:
@@ -29,6 +32,7 @@ import tensorflow as tf
 from torch.utils.data import DataLoader
 from pba.utils import parse_log_schedule
 import pba.augmentation_transforms_hp as augmentation_transforms_pba
+import PIL.Image as Image
 
 # pylint:disable=logging-format-interpolation
 
@@ -70,8 +74,9 @@ class DataSet(object):
         self.__test_data_root = hparams.test_data_root
         self.__test_csv_path = hparams.test_csv_path
 
-        self.__transform = hparams.transform
+
         self.__cutout_size = hparams.cutout_size
+        self.__num_workers = hparams.num_workers
         self.__padding_size = hparams.padding_size
         self.image_size = hparams.size_of_image
         self.num_classes = hparams.num_of_classes
@@ -79,6 +84,73 @@ class DataSet(object):
         self.epochs = 0
 
         self.parse_policy(hparams)
+        crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
+        apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
+        self.__transform = transforms.Compose(
+            [
+                crop,
+                transforms.Resize((self.image_size, self.image_size)),
+                apply_pba,
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                transforms.ToTensor(),
+                Cutout(n_holes=1, length=self.__cutout_size)
+            ]
+        )
+        self.train_loader = DataLoader(
+            CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
+            batch_size=self.hparams.batch_size,
+            shuffle=True,
+            num_workers=self.__num_workers,
+            drop_last=True)
+        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
+                                     batch_size=self.hparams.test_batch_size,
+                                     shuffle=False,
+                                     num_workers=self.__num_workers,
+                                     drop_last=True)
+        self.test_loader = DataLoader(
+            CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
+            batch_size=self.hparams.test_batch_size,
+            shuffle=False,
+            num_workers=self.__num_workers,
+            drop_last=True)
+        self.__train_iter = iter(self.train_loader)
+
+        self.num_train = len(self.train_loader)
+        self.num_val = len(self.val_loader)
+        self.num_test = len(self.test_loader)
+        self.__curr_epoch = 0
+    @property
+    def curr_epoch(self):
+        return self.__curr_epoch
+
+    @curr_epoch.setter
+    def curr_epoch(self, current_epoch):
+        if not isinstance(current_epoch, int):
+            raise ValueError('epoch must be an integer!')
+        if current_epoch < 0:
+            raise ValueError('epoch must > 0!')
+        self.__curr_epoch = current_epoch
+
+    def reset_dataloader(self, ):
+        """
+        reset transform after reset policy
+        Returns:
+
+        """
+        crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
+        apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
+        self.__transform = transforms.Compose(
+            [
+                crop,
+                transforms.Resize((self.image_size, self.image_size)),
+                apply_pba,
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                transforms.ToTensor(),
+                Cutout(n_holes=1, length=self.__cutout_size)
+            ]
+        )
         self.train_loader = DataLoader(
             CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
             batch_size=self.hparams.batch_size,
@@ -101,6 +173,32 @@ class DataSet(object):
         self.num_train = len(self.train_loader)
         self.num_val = len(self.val_loader)
         self.num_test = len(self.test_loader)
+        tf.logging.info('reset data loader!')
+
+    def __apply_pba(self, data):
+        """
+
+        Args:
+            data: pillow image object
+
+        Returns:
+            pillow image object
+        """
+        # apply PBA policy
+        if isinstance(self.policy[0], list):
+            img = self.augmentation_transforms.apply_policy(
+                self.policy[self.__curr_epoch],
+                data,
+                image_size=self.image_size)
+        elif isinstance(self.policy, list):
+            # policy schedule
+            img = self.augmentation_transforms.apply_policy(
+                self.policy,
+                data,
+                image_size=self.image_size)
+        else:
+            raise ValueError('Unknown policy.')
+        return img
 
     def parse_policy(self, hparams):
         """Parses policy schedule from input, which can be a list, list of lists, text file, or pickled list.
@@ -167,100 +265,40 @@ class DataSet(object):
                 self.policy))
 
     def reset_policy(self, new_hparams):
+        """
+        reset policy after an epoch start and before transform has been reset.
+        Args:
+            new_hparams:
+
+        Returns:
+
+        """
         self.hparams = new_hparams
         self.parse_policy(new_hparams)
         tf.logging.info('reset aug policy')
         return
 
-    def load_data(self):
-        """Loadrawdatafromhackdataset.
-
-        Assumes data is in NHWC format.
-
-        Populates:
-        self.train_loader:Training image and label data.
-        self.val_loader:Validation/holdout image and label data.
-        self.test_loader:Testing image and label data.
-        self.num_classes:Number of classes.
-        self.num_train:Number of training examples.
-        self.num_val:Number of validating examples.
-        self.num_test:Number of testing examples.
-        self.image_size:Width/height of image.
-
-        Args:
-        hparams:tf.hparams object.
-        """
-
-        self.train_loader = DataLoader(CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
-                                       batch_size=self.hparams.batch_size,
-                                       shuffle=True,
-                                       num_workers=2,
-                                       drop_last=True)
-        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
-                                     batch_size=self.hparams.test_batch_size,
-                                     shuffle=False,
-                                     num_workers=2,
-                                     drop_last=True)
-        self.test_loader = DataLoader(CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
-                                      batch_size=self.hparams.test_batch_size,
-                                      shuffle=False,
-                                      num_workers=2,
-                                      drop_last=True)
-        self.__train_iter = iter(self.train_loader)
-
-        self.num_train = len(self.train_loader)
-        self.num_val = len(self.val_loader)
-        self.num_test = len(self.test_loader)
-
-    def next_batch(self, iteration=None):
+    def next_batch(self):
         """Return the next minibatch of augmented data."""
         try:
             batched_data = next(self.__train_iter)
         except StopIteration:
-            # Increase epoch number
-            epoch = self.epochs + 1
-            self.reset()
-            self.epochs = epoch
-            batched_data = next(self.__train_iter)
-        final_imgs = []
-
+            pass
+        # 1. torch.Tensor to np.array
+        # 2. channel first to channel last
         images, labels = batched_data
         images = images.numpy()
         images = images.transpose(0,2,3,1)
         labels = labels.numpy()
         batchsize = labels.size
+        # 3. label to one hot
         labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
 
-        for data in images:
-            # apply PBA policy)
-            if isinstance(self.policy[0], list):
-                final_img = self.augmentation_transforms.apply_policy(
-                    self.policy[iteration],
-                    data,
-                    image_size=self.image_size)
-            elif isinstance(self.policy, list):
-                # policy schedule
-                final_img = self.augmentation_transforms.apply_policy(
-                    self.policy,
-                    data,
-                    image_size=self.image_size)
-            else:
-                raise ValueError('Unknown policy.')
-            final_img = self.augmentation_transforms.random_flip(
-                self.augmentation_transforms.zero_pad_and_crop(
-                    final_img, self.__padding_size))
-
-            # Apply cutout
-            if not self.hparams.no_cutout:
-                final_img = self.augmentation_transforms.cutout_numpy(
-                    final_img, size=self.__cutout_size)
-            final_imgs.append(final_img)
-        batched_data = (np.array(final_imgs, np.float32), labels)
+        batched_data = (np.array(images, np.float32), labels)
         return batched_data
 
     def reset(self):
         """Reset training data and index into the training data."""
-        self.epochs = 0
         # Shuffle the training data
-        self.__train_iter = iter(self.train_loader)
+
 

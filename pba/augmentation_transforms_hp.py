@@ -23,18 +23,16 @@ import inspect
 import random
 
 import numpy as np
-from PIL import ImageOps, ImageEnhance, ImageFilter, Image  # pylint:disable=g-multiple-import
+from PIL import ImageOps, ImageEnhance, ImageFilter, Image
 
-from pba.augmentation_transforms import random_flip, zero_pad_and_crop, cutout_numpy  # pylint: disable=unused-import
 from pba.augmentation_transforms import TransformFunction
-from pba.augmentation_transforms import ALL_TRANSFORMS, NAME_TO_TRANSFORM, TRANSFORM_NAMES  # pylint: disable=unused-import
-from pba.augmentation_transforms import pil_wrap, pil_unwrap  # pylint: disable=unused-import
-from pba.augmentation_transforms import PARAMETER_MAX  # pylint: disable=unused-import
+from pba.augmentation_transforms import NAME_TO_TRANSFORM
+from pba.augmentation_transforms import PARAMETER_MAX
 from pba.augmentation_transforms import _rotate_impl, _posterize_impl, _shear_x_impl, _shear_y_impl, _translate_x_impl, _translate_y_impl, _crop_impl, _solarize_impl, _cutout_pil_impl, _enhancer_impl
 
 
 def apply_policy(policy, img, image_size, verbose=False):
-    """Apply the `policy` to the numpy `img`.
+    """Apply the `policy` to the pil `img`.
 
   Args:
     policy: A list of tuples with the form (name, probability, level) where
@@ -50,7 +48,8 @@ def apply_policy(policy, img, image_size, verbose=False):
   """
     count = np.random.choice([0, 1, 2, 3], p=[0.2, 0.3, 0.5, 0.0])
     if count != 0:
-        pil_img = pil_wrap(img)
+        # pil_img = pil_wrap(img)
+        pil_img = img
         policy = copy.copy(policy)
         random.shuffle(policy)
         for xform in policy:
@@ -67,7 +66,9 @@ def apply_policy(policy, img, image_size, verbose=False):
             assert count >= 0
             if count == 0:
                 break
-        return pil_unwrap(pil_img, image_size)
+        # return pil_unwrap(pil_img, image_size)
+        pil_img = pil_img.convert('RGB')
+        return pil_img
     else:
         return img
 

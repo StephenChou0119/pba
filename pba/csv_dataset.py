@@ -23,8 +23,7 @@ class CsvDataset(Dataset):
         img_name = self.target_frame.iloc[item, 0]
         target = int(self.target_frame.iloc[item, 1])
         img_fullname = os.path.join(self.root, img_name)
-        image = Image.open(img_fullname)
+        img = Image.open(img_fullname)
         if self.transform is not None:
-            img = self.transform(image)
-        img = np.array(img)
+            img = self.transform(img)
         return img, target

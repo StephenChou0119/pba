@@ -47,12 +47,11 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
     )
 
     if state == 'train':
-        if configs.hp_policy.endswith('.txt') or configs.hp_policy.endswith(
-                '.p'):
+        if configs.hp_policy.endswith('.txt'):
             # will be loaded in in data_utils
             parsed_policy = configs.hp_policy
         else:
-            raise ValueError('policy file must end with .txt or .p')
+            raise ValueError('policy file must end with .txt')
         hparams.add_hparam('hp_policy', parsed_policy)
         hparams.add_hparam('hp_policy_epochs', configs.hp_policy_epochs)
     elif state == 'search':
@@ -68,9 +67,9 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
     hparams.add_hparam('val_csv_path', configs.val_csv_path)
     hparams.add_hparam('test_data_root', configs.test_data_root)
     hparams.add_hparam('test_csv_path', configs.test_csv_path)
-    hparams.add_hparam('transform', configs.transform)
     hparams.add_hparam('image_size', configs.image_size)
     hparams.add_hparam('num_classes', configs.num_classes)
+    hparams.add_hparam('num_workers', configs.num_workers)
 
     if configs.epochs > 0:
         epochs = configs.epochs
