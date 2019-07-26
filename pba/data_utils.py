@@ -64,6 +64,9 @@ class DataSet(object):
     Load raw data from hack dataset.
 
         Assumes data is in NHWC format.
+        Args:
+            hparams: tf.hparams object.
+            todo write doc of hparams
     """
 
     def __init__(self, hparams):
@@ -73,91 +76,20 @@ class DataSet(object):
         self.image_size = hparams.size_of_image
         self.num_classes = hparams.num_of_classes
         self.hparams = hparams
-        self.epochs = 0
+        self.augmentation_transforms = augmentation_transforms_pba
 
         self.parse_policy(hparams)
-        self.__mean = hparams.mean
-        self.__std = hparams.std
-        apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
-
-        normalize = transforms.Normalize(self.__mean, self.__std)
-        if hparams.dataset_type == 'custom':
-            self.__train_data_root = hparams.train_data_root
-            self.__train_csv_path = hparams.train_csv_path
-            self.__val_data_root = hparams.val_data_root
-            self.__val_csv_path = hparams.val_csv_path
-            self.__test_data_root = hparams.test_data_root
-            self.__test_csv_path = hparams.test_csv_path
-            crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
-            self.__transform = transforms.Compose(
-                [
-                    crop,
-                    transforms.Resize((self.image_size, self.image_size)),
-                    apply_pba,
-                    transforms.RandomHorizontalFlip(),
-                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
-                    transforms.ToTensor(),
-                    normalize,
-                    Cutout(n_holes=1, length=self.__cutout_size)
-                ]
-            )
-            self.train_loader = DataLoader(
-                CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
-                batch_size=self.hparams.batch_size,
-                shuffle=True,
-                num_workers=self.__num_workers,
-                drop_last=True)
-            self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
-                                         batch_size=self.hparams.batch_size,
-                                         shuffle=False,
-                                         num_workers=self.__num_workers,
-                                         drop_last=True)
-            self.test_loader = DataLoader(
-                CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
-                batch_size=self.hparams.batch_size,
-                shuffle=False,
-                num_workers=self.__num_workers,
-                drop_last=True)
-        elif hparams.dataset_type == 'cifar10':
-            self.data_root = hparams.data_root
-            self.__transform = transforms.Compose(
-                [
-                    transforms.Resize((self.image_size, self.image_size)),
-                    apply_pba,
-                    transforms.RandomHorizontalFlip(),
-                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
-                    transforms.ToTensor(),
-                    normalize,
-                    Cutout(n_holes=1, length=self.__cutout_size)
-                ]
-            )
-            self.train_loader = DataLoader(
-                torchvision.datasets.CIFAR10(self.data_root, train=True, transform=self.__transform, download=True),
-                batch_size=self.hparams.batch_size,
-                shuffle=True,
-                num_workers=self.__num_workers,
-                drop_last=True)
-            self.val_loader = DataLoader(
-                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
-                batch_size=self.hparams.batch_size,
-                shuffle=False,
-                num_workers=self.__num_workers,
-                drop_last=True
-            )
-            self.test_loader = DataLoader(
-                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
-                batch_size=self.hparams.batch_size,
-                shuffle=False,
-                num_workers=self.__num_workers,
-                drop_last=True
-            )
-        self.__train_iter = iter(self.train_loader)
-
-        self.num_train = len(self.train_loader)
-        self.num_val = len(self.val_loader)
-        self.num_test = len(self.test_loader)
+        self.__pba_transform = transforms.Lambda(lambda img: self.__apply_pba(img))
+        self.__normalize = transforms.Normalize(hparams.mean, hparams.std)
+        self.__test_transform = transforms.Compose(
+            [
+                transforms.Resize((self.image_size, self.image_size)),
+                transforms.ToTensor(),
+                self.__normalize,
+            ]
+        )
+        self.reset_dataloader()
         self.__curr_epoch = 0
-
 
     @property
     def curr_epoch(self):
@@ -177,10 +109,7 @@ class DataSet(object):
         Returns:
 
         """
-        apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
-        dataset_mean = [130.13 / 255, 112.82 / 255, 102.47 / 255]
-        dataset_std = [67.28 / 255, 64.61 / 255, 64.46 / 255]
-        normalize = transforms.Normalize(dataset_mean, dataset_std)
+
         if self.hparams.dataset_type == 'custom':
             self.__train_data_root = self.hparams.train_data_root
             self.__train_csv_path = self.hparams.train_csv_path
@@ -193,11 +122,11 @@ class DataSet(object):
                 [
                     crop,
                     transforms.Resize((self.image_size, self.image_size)),
-                    apply_pba,
+                    self.__pba_transform,
                     transforms.RandomHorizontalFlip(),
                     transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
                     transforms.ToTensor(),
-                    normalize,
+                    self.__normalize,
                     Cutout(n_holes=1, length=self.__cutout_size)
                 ]
             )
@@ -208,13 +137,13 @@ class DataSet(object):
                 num_workers=self.__num_workers,
                 drop_last=True)
             self.val_loader = DataLoader(
-                CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
+                CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__test_transform),
                 batch_size=self.hparams.batch_size,
                 shuffle=False,
                 num_workers=self.__num_workers,
                 drop_last=True)
             self.test_loader = DataLoader(
-                CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
+                CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__test_transform),
                 batch_size=self.hparams.batch_size,
                 shuffle=False,
                 num_workers=self.__num_workers,
@@ -224,10 +153,11 @@ class DataSet(object):
             self.__transform = transforms.Compose(
                 [
                     transforms.Resize((self.image_size, self.image_size)),
-                    apply_pba,
+                    self.__pba_transform,
                     transforms.RandomHorizontalFlip(),
                     transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
                     transforms.ToTensor(),
+                    self.__normalize,
                     Cutout(n_holes=1, length=self.__cutout_size)
                 ]
             )
@@ -238,14 +168,45 @@ class DataSet(object):
                 num_workers=self.__num_workers,
                 drop_last=True)
             self.val_loader = DataLoader(
-                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__test_transform, download=True),
                 batch_size=self.hparams.batch_size,
                 shuffle=False,
                 num_workers=self.__num_workers,
                 drop_last=True
             )
             self.test_loader = DataLoader(
-                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__test_transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
+        elif self.hparams.dataset_type == 'svhn':
+            self.data_root = self.hparams.data_root
+            self.__transform = transforms.Compose(
+                [
+                    transforms.Resize((self.image_size, self.image_size)),
+                    self.__pba_transform,
+                    transforms.ToTensor(),
+                    self.__transform,
+                    Cutout(n_holes=1, length=self.__cutout_size)
+                ]
+            )
+            self.train_loader = DataLoader(
+                torchvision.datasets.SVHN(self.data_root, split='train', transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=True,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.val_loader = DataLoader(
+                torchvision.datasets.SVHN(self.data_root, split='test', transform=self.__test_transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
+            self.test_loader = DataLoader(
+                torchvision.datasets.SVHN(self.data_root, split='test', transform=self.__test_transform, download=True),
                 batch_size=self.hparams.batch_size,
                 shuffle=False,
                 num_workers=self.__num_workers,
@@ -291,9 +252,6 @@ class DataSet(object):
         Args:
         hparams: tf.hparams object.
         """
-        # Parse policy
-        self.augmentation_transforms = augmentation_transforms_pba
-
         if isinstance(hparams.hp_policy,
                       str) and hparams.hp_policy.endswith('.txt'):
             if hparams.num_epochs % hparams.hp_policy_epochs != 0:
