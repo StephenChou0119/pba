@@ -28,6 +28,7 @@ import tensorflow as tf
 
 import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
+# from pba.setup import build_func
 
 arg_scope = tf.contrib.framework.arg_scope
 
@@ -104,7 +105,17 @@ def build_model(inputs, num_classes, is_training, hparams):
     if len(scopes) != 1:
         raise ValueError('Nested scopes depreciated in py3.')
     with scopes[0]:
-        logits = hparams.build_model(inputs, num_classes, is_training)
+        # logits = build_func(inputs, num_classes, is_training)
+        def build_func(inputs, num_classes, is_training):
+            import models.mobilenet.mobilenet_v2 as mobilenet_v2
+            if is_training:
+                with tf.contrib.slim.arg_scope(mobilenet_v2.training_scope()):
+                    logits, endpoints = mobilenet_v2.mobilenet_v2_035(inputs, num_classes=num_classes)
+            else:
+                logits, endpoints = mobilenet_v2.mobilenet_v2_035(inputs, num_classes=num_classes)
+            return logits
+        logits = build_func(inputs, num_classes, is_training)
+
     return logits
 
 
@@ -187,7 +198,7 @@ def eval_child_model(session, model, dataset, mode):
         images = images.transpose(0, 2, 3, 1)
         labels = labels.numpy()
         batchsize = labels.size
-        labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
+        labels = np.eye(dataset.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
         preds = session.run(
             model.predictions,
             feed_dict={
@@ -224,8 +235,6 @@ class Model(object):
         self.lr_rate_ph = tf.Variable(0.0, name='lrn_rate', trainable=False)
         self.reuse = None if (mode == 'train') else True
         self.batch_size = self.hparams.batch_size
-        if mode == 'eval':
-            self.batch_size = self.hparams.test_batch_size
 
     def _setup_images_and_labels(self):
         """Sets up image and label placeholders for the model."""
@@ -314,8 +323,6 @@ class ModelTrainer(object):
         np.random.seed(0)
         self.dataset = data_utils.DataSet(hparams)
         np.random.seed()  # Put the random seed back to random
-        self.dataset.reset()
-
         # extra stuff for ray
         self._build_models()
         self._new_session()

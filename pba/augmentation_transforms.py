@@ -24,46 +24,6 @@ import numpy as np
 from PIL import ImageOps, ImageEnhance, ImageFilter, Image
 
 PARAMETER_MAX = 10  # What is the max 'level' a transform could be predicted
-dataset_mean = [130.13, 112.82, 102.47]
-dataset_std = [67.28, 64.61, 64.46]
-def pil_wrap(img):
-    """Convert the `img` numpy tensor to a PIL Image."""
-    return Image.fromarray(
-        np.uint8(
-            img * dataset_std + dataset_mean)).convert('RGBA')
-
-
-def pil_unwrap(pil_img, image_size):
-    """Converts the PIL img to a numpy array."""
-    pic_array = (np.array(pil_img.getdata()).reshape((image_size, image_size, 4)) / 255.0)
-    i1, i2 = np.where(pic_array[:, :, 3] == 0)
-    pic_array = (pic_array[:, :, :3] - dataset_mean) / dataset_std
-    pic_array[i1, i2] = [0, 0, 0]
-    return pic_array
-
-
-def apply_policy(policy, img, image_size):
-    """Apply the `policy` to the numpy `img`.
-
-  Args:
-    policy: A list of tuples with the form (name, probability, level) where
-      `name` is the name of the augmentation operation to apply, `probability`
-      is the probability of applying the operation and `level` is what strength
-      the operation to apply.
-    img: Numpy image that will have `policy` applied to it.
-    image_size: Width and height of image.
-
-  Returns:
-    The result of applying `policy` to `img`.
-  """
-    pil_img = pil_wrap(img)
-    for xform in policy:
-        assert len(xform) == 3
-        name, probability, level = xform
-        xform_fn = NAME_TO_TRANSFORM[name].pil_transformer(
-            probability, level, image_size)
-        pil_img = xform_fn(pil_img)
-    return pil_unwrap(pil_img, image_size)
 
 
 def random_flip(x):

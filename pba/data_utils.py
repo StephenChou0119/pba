@@ -21,7 +21,8 @@ from __future__ import print_function
 import torchvision.transforms.functional as TF
 import torchvision.transforms as transforms
 from pba.cutout import Cutout
-import copy
+import torchvision
+
 from pba.csv_dataset import CsvDataset
 try:
     import cPickle as pickle
@@ -32,7 +33,6 @@ import tensorflow as tf
 from torch.utils.data import DataLoader
 from pba.utils import parse_log_schedule
 import pba.augmentation_transforms_hp as augmentation_transforms_pba
-import PIL.Image as Image
 
 # pylint:disable=logging-format-interpolation
 
@@ -67,14 +67,6 @@ class DataSet(object):
     """
 
     def __init__(self, hparams):
-        self.__train_data_root = hparams.train_data_root
-        self.__train_csv_path = hparams.train_csv_path
-        self.__val_data_root = hparams.val_data_root
-        self.__val_csv_path = hparams.val_csv_path
-        self.__test_data_root = hparams.test_data_root
-        self.__test_csv_path = hparams.test_csv_path
-
-
         self.__cutout_size = hparams.cutout_size
         self.__num_workers = hparams.num_workers
         self.__padding_size = hparams.padding_size
@@ -84,42 +76,89 @@ class DataSet(object):
         self.epochs = 0
 
         self.parse_policy(hparams)
-        crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
+        self.__mean = hparams.mean
+        self.__std = hparams.std
         apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
-        self.__transform = transforms.Compose(
-            [
-                crop,
-                transforms.Resize((self.image_size, self.image_size)),
-                apply_pba,
-                transforms.RandomHorizontalFlip(),
-                transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
-                transforms.ToTensor(),
-                Cutout(n_holes=1, length=self.__cutout_size)
-            ]
-        )
-        self.train_loader = DataLoader(
-            CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
-            batch_size=self.hparams.batch_size,
-            shuffle=True,
-            num_workers=self.__num_workers,
-            drop_last=True)
-        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
-                                     batch_size=self.hparams.test_batch_size,
-                                     shuffle=False,
-                                     num_workers=self.__num_workers,
-                                     drop_last=True)
-        self.test_loader = DataLoader(
-            CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
-            batch_size=self.hparams.test_batch_size,
-            shuffle=False,
-            num_workers=self.__num_workers,
-            drop_last=True)
+
+        normalize = transforms.Normalize(self.__mean, self.__std)
+        if hparams.dataset_type == 'custom':
+            self.__train_data_root = hparams.train_data_root
+            self.__train_csv_path = hparams.train_csv_path
+            self.__val_data_root = hparams.val_data_root
+            self.__val_csv_path = hparams.val_csv_path
+            self.__test_data_root = hparams.test_data_root
+            self.__test_csv_path = hparams.test_csv_path
+            crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
+            self.__transform = transforms.Compose(
+                [
+                    crop,
+                    transforms.Resize((self.image_size, self.image_size)),
+                    apply_pba,
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                    transforms.ToTensor(),
+                    normalize,
+                    Cutout(n_holes=1, length=self.__cutout_size)
+                ]
+            )
+            self.train_loader = DataLoader(
+                CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
+                batch_size=self.hparams.batch_size,
+                shuffle=True,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
+                                         batch_size=self.hparams.batch_size,
+                                         shuffle=False,
+                                         num_workers=self.__num_workers,
+                                         drop_last=True)
+            self.test_loader = DataLoader(
+                CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True)
+        elif hparams.dataset_type == 'cifar10':
+            self.data_root = hparams.data_root
+            self.__transform = transforms.Compose(
+                [
+                    transforms.Resize((self.image_size, self.image_size)),
+                    apply_pba,
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                    transforms.ToTensor(),
+                    normalize,
+                    Cutout(n_holes=1, length=self.__cutout_size)
+                ]
+            )
+            self.train_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=True, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=True,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.val_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
+            self.test_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
         self.__train_iter = iter(self.train_loader)
 
         self.num_train = len(self.train_loader)
         self.num_val = len(self.val_loader)
         self.num_test = len(self.test_loader)
         self.__curr_epoch = 0
+
+
     @property
     def curr_epoch(self):
         return self.__curr_epoch
@@ -138,36 +177,80 @@ class DataSet(object):
         Returns:
 
         """
-        crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
         apply_pba = transforms.Lambda(lambda img: self.__apply_pba(img))
-        self.__transform = transforms.Compose(
-            [
-                crop,
-                transforms.Resize((self.image_size, self.image_size)),
-                apply_pba,
-                transforms.RandomHorizontalFlip(),
-                transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
-                transforms.ToTensor(),
-                Cutout(n_holes=1, length=self.__cutout_size)
-            ]
-        )
-        self.train_loader = DataLoader(
-            CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
-            batch_size=self.hparams.batch_size,
-            shuffle=True,
-            num_workers=2,
-            drop_last=True)
-        self.val_loader = DataLoader(CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
-                                     batch_size=self.hparams.test_batch_size,
-                                     shuffle=False,
-                                     num_workers=2,
-                                     drop_last=True)
-        self.test_loader = DataLoader(
-            CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
-            batch_size=self.hparams.test_batch_size,
-            shuffle=False,
-            num_workers=2,
-            drop_last=True)
+        dataset_mean = [130.13 / 255, 112.82 / 255, 102.47 / 255]
+        dataset_std = [67.28 / 255, 64.61 / 255, 64.46 / 255]
+        normalize = transforms.Normalize(dataset_mean, dataset_std)
+        if self.hparams.dataset_type == 'custom':
+            self.__train_data_root = self.hparams.train_data_root
+            self.__train_csv_path = self.hparams.train_csv_path
+            self.__val_data_root = self.hparams.val_data_root
+            self.__val_csv_path = self.hparams.val_csv_path
+            self.__test_data_root = self.hparams.test_data_root
+            self.__test_csv_path = self.hparams.test_csv_path
+            crop = transforms.Lambda(lambda img: TF.crop(img, 251 - 250, 273 - 250, 500, 500))
+            self.__transform = transforms.Compose(
+                [
+                    crop,
+                    transforms.Resize((self.image_size, self.image_size)),
+                    apply_pba,
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                    transforms.ToTensor(),
+                    normalize,
+                    Cutout(n_holes=1, length=self.__cutout_size)
+                ]
+            )
+            self.train_loader = DataLoader(
+                CsvDataset(self.__train_data_root, self.__train_csv_path, transform=self.__transform),
+                batch_size=self.hparams.batch_size,
+                shuffle=True,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.val_loader = DataLoader(
+                CsvDataset(self.__val_data_root, self.__val_csv_path, transform=self.__transform),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.test_loader = DataLoader(
+                CsvDataset(self.__test_data_root, self.__test_csv_path, transform=self.__transform),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True)
+        elif self.hparams.dataset_type == 'cifar10':
+            self.data_root = self.hparams.data_root
+            self.__transform = transforms.Compose(
+                [
+                    transforms.Resize((self.image_size, self.image_size)),
+                    apply_pba,
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                    transforms.ToTensor(),
+                    Cutout(n_holes=1, length=self.__cutout_size)
+                ]
+            )
+            self.train_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=True, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=True,
+                num_workers=self.__num_workers,
+                drop_last=True)
+            self.val_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
+            self.test_loader = DataLoader(
+                torchvision.datasets.CIFAR10(self.data_root, train=False, transform=self.__transform, download=True),
+                batch_size=self.hparams.batch_size,
+                shuffle=False,
+                num_workers=self.__num_workers,
+                drop_last=True
+            )
         self.__train_iter = iter(self.train_loader)
 
         self.num_train = len(self.train_loader)
@@ -292,13 +375,8 @@ class DataSet(object):
         labels = labels.numpy()
         batchsize = labels.size
         # 3. label to one hot
-        labels = np.eye(2)[labels.reshape(-1)].T.reshape(batchsize, -1)
+        labels = np.eye(self.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
 
         batched_data = (np.array(images, np.float32), labels)
         return batched_data
-
-    def reset(self):
-        """Reset training data and index into the training data."""
-        # Shuffle the training data
-
 
