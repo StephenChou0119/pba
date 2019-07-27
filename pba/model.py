@@ -29,95 +29,7 @@ import tensorflow as tf
 import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
 # from pba.setup import build_func
-
-arg_scope = tf.contrib.framework.arg_scope
-
-
-@tf.contrib.framework.add_arg_scope
-def batch_norm(inputs,
-               decay=0.999,
-               center=True,
-               scale=False,
-               epsilon=0.001,
-               is_training=True,
-               reuse=None,
-               scope=None):
-  """Small wrapper around tf.contrib.layers.batch_norm."""
-  return tf.contrib.layers.batch_norm(
-      inputs,
-      decay=decay,
-      center=center,
-      scale=scale,
-      epsilon=epsilon,
-      activation_fn=None,
-      param_initializers=None,
-      updates_collections=tf.GraphKeys.UPDATE_OPS,
-      is_training=is_training,
-      reuse=reuse,
-      trainable=True,
-      fused=True,
-      data_format='NHWC',
-      zero_debias_moving_mean=False,
-      scope=scope)
-
-
-def setup_arg_scopes(is_training):
-    """Sets up the argscopes that will be used when building an image model.
-
-    Args:
-      is_training: Is the model training or not.
-
-    Returns:
-      Arg scopes to be put around the model being constructed.
-    """
-
-    batch_norm_decay = 0.9
-    batch_norm_epsilon = 1e-5
-    batch_norm_params = {
-        # Decay for the moving averages.
-        'decay': batch_norm_decay,
-        # epsilon to prevent 0s in variance.
-        'epsilon': batch_norm_epsilon,
-        'scale': True,
-        # collection containing the moving mean and moving variance.
-        'is_training': is_training,
-    }
-
-    scopes = []
-
-    scopes.append(arg_scope([batch_norm], **batch_norm_params))
-    return scopes
-
-
-def build_model(inputs, num_classes, is_training, hparams):
-    """Constructs the vision model being trained/evaled.
-
-    Args:
-      inputs: input features/images being fed to the image model build built.
-      num_classes: number of output classes being predicted.
-      is_training: is the model training or not.
-      hparams: additional hyperparameters associated with the image model.
-
-    Returns:
-      The logits of the image model.
-    """
-    scopes = setup_arg_scopes(is_training)
-    if len(scopes) != 1:
-        raise ValueError('Nested scopes depreciated in py3.')
-    with scopes[0]:
-        # logits = build_func(inputs, num_classes, is_training)
-        def build_func(inputs, num_classes, is_training):
-            import models.mobilenet.mobilenet_v2 as mobilenet_v2
-            if is_training:
-                with tf.contrib.slim.arg_scope(mobilenet_v2.training_scope()):
-                    logits, endpoints = mobilenet_v2.mobilenet_v2_035(inputs, num_classes=num_classes)
-            else:
-                logits, endpoints = mobilenet_v2.mobilenet_v2_035(inputs, num_classes=num_classes)
-            return logits
-        logits = build_func(inputs, num_classes, is_training)
-
-    return logits
-
+from models.model_config import build_model
 
 def run_epoch_training(session, model, dataset, curr_epoch):
     """Runs one epoch of training for the model passed in.
@@ -142,6 +54,7 @@ def run_epoch_training(session, model, dataset, curr_epoch):
 
     correct = 0
     count = 0
+    cost_epoch = []
     for step in range(steps_per_epoch):
         curr_lr = helper_utils.get_lr(curr_epoch, model.hparams, iteration=(step + 1))
         # Update the lr rate variable to the current LR.
@@ -151,17 +64,18 @@ def run_epoch_training(session, model, dataset, curr_epoch):
 
         train_images, train_labels = dataset.next_batch()
 
-        _, step, preds = session.run(
-            [model.train_op, model.global_step, model.predictions],
+        _, step, preds,cost,_ = session.run(
+            [model.train_op, model.global_step, model.predictions, model.cost, model.apply_op],
             feed_dict={
                 model.images: train_images,
                 model.labels: train_labels,
             })
-
+        cost_epoch.append(cost)
         correct += np.sum(
             np.equal(np.argmax(train_labels, 1), np.argmax(preds, 1)))
         count += len(preds)
     train_accuracy = correct / count
+    print('train cost', np.mean(np.array(cost_epoch)))
 
     tf.logging.info('Train accuracy: {}'.format(train_accuracy))
     return train_accuracy
@@ -192,21 +106,23 @@ def eval_child_model(session, model, dataset, mode):
 
     correct = 0
     count = 0
+    cost_epoch = []
     for i, batch in enumerate(loader):
         images, labels = batch
         images = images.numpy()
         labels = labels.numpy()
-        batchsize = labels.size
-        labels = np.eye(dataset.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
-        preds = session.run(
-            model.predictions,
+        labels = np.eye(dataset.num_classes)[labels]
+        preds, loss = session.run(
+            [model.predictions, model.cost],
             feed_dict={
                 model.images: images,
                 model.labels: labels,
             })
+        cost_epoch.append(loss)
         correct += np.sum(
             np.equal(np.argmax(labels, 1), np.argmax(preds, 1)))
         count += len(preds)
+    print('eval cost', np.mean(np.array(cost_epoch)))
     return correct / count
 
 
@@ -217,6 +133,9 @@ class Model(object):
         self.hparams = hparams
         self.num_classes = num_classes
         self.image_size = image_size
+        # self._build_model = hparams.build_func
+        # self._build_model = build_func
+        self._build_model = build_model
 
     def build(self, mode):
         """Construct the model."""
@@ -237,8 +156,6 @@ class Model(object):
 
     def _setup_images_and_labels(self):
         """Sets up image and label placeholders for the model."""
-        # self.images = tf.placeholder(tf.float32,
-        #                              [self.batch_size, self.image_size, self.image_size, 3])
         self.images = tf.placeholder(tf.float32,
                                      [self.batch_size, 3, self.image_size, self.image_size])
         self.labels = tf.placeholder(tf.float32,
@@ -260,8 +177,7 @@ class Model(object):
         if is_training:
             self.global_step = tf.train.get_or_create_global_step()
 
-        logits = build_model(images, self.num_classes, is_training,
-                             self.hparams)
+        logits = self._build_model(images, self.num_classes, is_training)
         self.predictions, self.cost = helper_utils.setup_loss(logits, labels)
 
         self._calc_num_trainable_params()
@@ -308,6 +224,9 @@ class Model(object):
         apply_op = optimizer.apply_gradients(
             zip(grads, tvars), global_step=self.global_step, name='train_step')
         train_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+
+        # todo test
+        self.apply_op = apply_op
         with tf.control_dependencies([apply_op]):
             self.train_op = tf.group(*train_ops)
 
@@ -421,7 +340,7 @@ class ModelTrainer(object):
 
     def _compute_final_accuracies(self, iteration):
         """Run once training is finished to compute final test accuracy."""
-        if (iteration >= self.hparams.num_epochs - 1):
+        if iteration >= self.hparams.num_epochs - 1:
             test_accuracy = self.eval_child_model(self.meval, self.dataset,
                                                   'test')
         else:

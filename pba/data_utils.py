@@ -77,15 +77,16 @@ class DataSet(object):
         self.num_classes = hparams.num_of_classes
         self.hparams = hparams
         self.augmentation_transforms = augmentation_transforms_pba
-
-        self.parse_policy(hparams)
-        self.__pba_transform = transforms.Lambda(lambda img: self.__apply_pba(img))
+        self.use_pba = hparams.use_pba
+        if self.use_pba:
+            self.parse_policy(hparams)
+        self.__pba_transform = transforms.Lambda(lambda img: self.__apply_pba(img) if self.use_pba else img)
         self.__normalize = transforms.Normalize(hparams.mean, hparams.std)
         self.__test_transform = transforms.Compose(
             [
-                # transforms.Resize((self.image_size, self.image_size)),
+                transforms.Resize((self.image_size, self.image_size)),
                 transforms.ToTensor(),
-                # self.__normalize,
+                self.__normalize,
             ]
         )
         self.reset_dataloader()
@@ -150,7 +151,6 @@ class DataSet(object):
                 num_workers=self.__num_workers,
                 drop_last=True)
         elif self.hparams.dataset_type == 'cifar10':
-            tf.logging.info('using cifar10 config!')
             self.data_root = self.hparams.data_root
             self.__transform = transforms.Compose(
                 [
@@ -188,13 +188,13 @@ class DataSet(object):
             self.data_root = self.hparams.data_root
             self.__transform = transforms.Compose(
                 [
-                    # transforms.Resize((self.image_size, self.image_size)),
-                    # self.__pba_transform,
-                    # transforms.RandomHorizontalFlip(),
-                    # transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
+                    transforms.Resize((self.image_size, self.image_size)),
+                    self.__pba_transform,
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
                     transforms.ToTensor(),
-                    # self.__normalize,
-                    # Cutout(n_holes=1, length=self.__cutout_size)
+                    self.__normalize,
+                    Cutout(n_holes=1, length=self.__cutout_size)
                 ]
             )
             self.train_loader = DataLoader(
@@ -234,12 +234,7 @@ class DataSet(object):
             pillow image object
         """
         # apply PBA policy
-        if isinstance(self.policy[0], list):
-            img = self.augmentation_transforms.apply_policy(
-                self.policy[self.__curr_epoch],
-                data,
-                image_size=self.image_size)
-        elif isinstance(self.policy, list):
+        if isinstance(self.policy, list):
             # policy schedule
             img = self.augmentation_transforms.apply_policy(
                 self.policy,
@@ -273,34 +268,10 @@ class DataSet(object):
                 epochs=hparams.hp_policy_epochs,
                 multiplier=float(hparams.num_epochs) /
                 hparams.hp_policy_epochs)
-        elif isinstance(hparams.hp_policy,
-                        str) and hparams.hp_policy.endswith('.p'):
-            assert hparams.num_epochs % hparams.hp_policy_epochs == 0
-            tf.logging.info('custom .p file, policy number: {}'.format(
-                hparams.schedule_num))
-            with open(hparams.hp_policy, 'rb') as f:
-                policy = pickle.load(f)[hparams.schedule_num]
-            raw_policy = []
-            for num_iters, pol in policy:
-                for _ in range(num_iters * hparams.num_epochs //
-                               hparams.hp_policy_epochs):
-                    raw_policy.append(pol)
         else:
             raw_policy = hparams.hp_policy
 
-        if isinstance(raw_policy[0], list):
-            self.policy = []
-            split = len(raw_policy[0]) // 2
-            for pol in raw_policy:
-                cur_pol = parse_policy(pol[:split],
-                                       self.augmentation_transforms)
-                cur_pol.extend(
-                    parse_policy(pol[split:],
-                                 self.augmentation_transforms))
-                self.policy.append(cur_pol)
-            tf.logging.info('using HP policy schedule, last: {}'.format(
-                self.policy[-1]))
-        elif isinstance(raw_policy, list):
+        if isinstance(raw_policy, list):
             split = len(raw_policy) // 2
             self.policy = parse_policy(raw_policy[:split],
                                        self.augmentation_transforms)
@@ -331,14 +302,11 @@ class DataSet(object):
         except StopIteration:
             pass
         # 1. torch.Tensor to np.array
-        # 2. channel first to channel last
         images, labels = batched_data
         images = images.numpy()
-        # images = images.transpose(0,2,3,1)
         labels = labels.numpy()
-        batchsize = labels.size
-        # 3. label to one hot
-        labels = np.eye(self.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
+        # 2. label to one hot
+        labels = np.eye(self.num_classes)[labels]
         batched_data = (np.array(images, np.float32), labels)
         return batched_data
 

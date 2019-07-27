@@ -20,7 +20,7 @@ def create_parser():
 
 
 # build_func = create_parser().build_func
-
+# print('aaaaaa',build_func)
 
 def create_hparams(state, configs):  # pylint: disable=invalid-name
     """Creates hyperparameters to pass into Ray config.
@@ -51,14 +51,19 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
     )
 
     if state == 'train':
-        if configs.hp_policy.endswith('.txt'):
-            # will be loaded in in data_utils
-            hparams.add_hparam('hp_policy', configs.hp_policy)
+        if configs.hp_policy is not None:
+            if configs.hp_policy.endswith('.txt'):
+                hparams.add_hparam('hp_policy', configs.hp_policy)
+                hparams.add_hparam('use_pba', True)
+            else:
+                raise ValueError('policy file must end with .txt')
+            hparams.add_hparam('hp_policy_epochs', configs.hp_policy_epochs)
         else:
-            raise ValueError('policy file must end with .txt')
-        hparams.add_hparam('hp_policy_epochs', configs.hp_policy_epochs)
+            hparams.add_hparam('use_pba', False)
+            tf.logging.info('disable pba!')
     elif state == 'search':
         # default start value of 0
+        hparams.add_hparam('use_pba', True)
         hparams.add_hparam('hp_policy',
                            [0 for _ in range(4 * NUM_HP_TRANSFORM)])
     else:
