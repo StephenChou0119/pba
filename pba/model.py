@@ -195,7 +195,6 @@ def eval_child_model(session, model, dataset, mode):
     for i, batch in enumerate(loader):
         images, labels = batch
         images = images.numpy()
-        images = images.transpose(0, 2, 3, 1)
         labels = labels.numpy()
         batchsize = labels.size
         labels = np.eye(dataset.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
@@ -238,8 +237,10 @@ class Model(object):
 
     def _setup_images_and_labels(self):
         """Sets up image and label placeholders for the model."""
+        # self.images = tf.placeholder(tf.float32,
+        #                              [self.batch_size, self.image_size, self.image_size, 3])
         self.images = tf.placeholder(tf.float32,
-                                     [self.batch_size, self.image_size, self.image_size, 3])
+                                     [self.batch_size, 3, self.image_size, self.image_size])
         self.labels = tf.placeholder(tf.float32,
                                      [self.batch_size, self.num_classes])
 

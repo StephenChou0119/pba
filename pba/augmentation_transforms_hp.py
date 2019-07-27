@@ -153,7 +153,7 @@ HP_TRANSFORMS = [
     shear_y,
     translate_x,
     translate_y,
-    cutout,
+    # cutout,
 ]
 
 NAME_TO_TRANSFORM = {t.name: t for t in HP_TRANSFORMS}

@@ -40,10 +40,13 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         lr=configs.learning_rate,
         weight_decay_rate=configs.weight_decay,
         cutout_size=configs.cutout_size,
-        padding_size=configs.padding_size,
         size_of_image=configs.image_size,
         num_of_classes=configs.num_classes,  # Hyperparameter name is reserved: num_classes, image_size
         dataset_type=configs.dataset_type,
+        num_workers=configs.num_workers,
+        mean=configs.mean,
+        std=configs.std,
+        padding_size=configs.padding_size,
         # build_func=tune.function(configs.build_func),
     )
 
@@ -67,14 +70,9 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         hparams.add_hparam('val_csv_path', configs.val_csv_path)
         hparams.add_hparam('test_data_root', configs.test_data_root)
         hparams.add_hparam('test_csv_path', configs.test_csv_path)
-    elif configs.dataset_type == 'cifar10':
-        hparams.add_hparam('data_root', configs.data_root)
-    hparams.add_hparam('image_size', configs.image_size)
-    hparams.add_hparam('num_classes', configs.num_classes)
-    hparams.add_hparam('num_workers', configs.num_workers)
-    hparams.add_hparam('mean', configs.dataset_mean)
-    hparams.add_hparam('std', configs.dataset_std)
 
+    else:
+        hparams.add_hparam('data_root', configs.data_root)
     if configs.epochs > 0:
         epochs = configs.epochs
     else:

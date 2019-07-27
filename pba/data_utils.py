@@ -83,9 +83,9 @@ class DataSet(object):
         self.__normalize = transforms.Normalize(hparams.mean, hparams.std)
         self.__test_transform = transforms.Compose(
             [
-                transforms.Resize((self.image_size, self.image_size)),
+                # transforms.Resize((self.image_size, self.image_size)),
                 transforms.ToTensor(),
-                self.__normalize,
+                # self.__normalize,
             ]
         )
         self.reset_dataloader()
@@ -111,6 +111,7 @@ class DataSet(object):
         """
 
         if self.hparams.dataset_type == 'custom':
+            tf.logging.info('using custom config!')
             self.__train_data_root = self.hparams.train_data_root
             self.__train_csv_path = self.hparams.train_csv_path
             self.__val_data_root = self.hparams.val_data_root
@@ -149,6 +150,7 @@ class DataSet(object):
                 num_workers=self.__num_workers,
                 drop_last=True)
         elif self.hparams.dataset_type == 'cifar10':
+            tf.logging.info('using cifar10 config!')
             self.data_root = self.hparams.data_root
             self.__transform = transforms.Compose(
                 [
@@ -182,14 +184,17 @@ class DataSet(object):
                 drop_last=True
             )
         elif self.hparams.dataset_type == 'svhn':
+            tf.logging.info('using svhn config!')
             self.data_root = self.hparams.data_root
             self.__transform = transforms.Compose(
                 [
-                    transforms.Resize((self.image_size, self.image_size)),
-                    self.__pba_transform,
+                    # transforms.Resize((self.image_size, self.image_size)),
+                    # self.__pba_transform,
+                    # transforms.RandomHorizontalFlip(),
+                    # transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),
                     transforms.ToTensor(),
-                    self.__transform,
-                    Cutout(n_holes=1, length=self.__cutout_size)
+                    # self.__normalize,
+                    # Cutout(n_holes=1, length=self.__cutout_size)
                 ]
             )
             self.train_loader = DataLoader(
@@ -329,12 +334,11 @@ class DataSet(object):
         # 2. channel first to channel last
         images, labels = batched_data
         images = images.numpy()
-        images = images.transpose(0,2,3,1)
+        # images = images.transpose(0,2,3,1)
         labels = labels.numpy()
         batchsize = labels.size
         # 3. label to one hot
         labels = np.eye(self.num_classes)[labels.reshape(-1)].T.reshape(batchsize, -1)
-
         batched_data = (np.array(images, np.float32), labels)
         return batched_data
 
