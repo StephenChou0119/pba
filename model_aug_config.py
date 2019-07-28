@@ -50,3 +50,14 @@ def build_efficientnet(inputs, num_classes, is_training):
 
 
 build_model=build_efficientnet
+
+rotate_max_degree = 30
+posterize_max = 4
+enhance_max = 1.8  # color contrast brightness sharpness
+shear_x_max = 0.3
+shear_y_max = 0.3
+translate_x_max = 10
+translate_y_max = 10
+cutout_max_size = 20
+mean = [0.43090966, 0.4302428, 0.44634357]  # mean of dataset
+std = [0.19652855, 0.19832038, 0.19942076]  # std of dataset
