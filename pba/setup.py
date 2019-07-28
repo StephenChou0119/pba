@@ -5,7 +5,6 @@ from __future__ import print_function
 import argparse
 import tensorflow as tf
 
-from pba.augmentation_transforms_hp import NUM_HP_TRANSFORM
 from mmcv import Config
 
 
@@ -16,9 +15,6 @@ def create_parser():
     args = parser.parse_args()
     config = Config.fromfile(args.config)
     return config
-
-
-config = create_parser()
 
 
 def create_hparams(state, configs):  # pylint: disable=invalid-name
@@ -46,6 +42,8 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         mean=configs.mean,
         std=configs.std,
         padding_size=configs.padding_size,
+        HP_TRANSFORM_NAMES=configs.HP_TRANSFORM_NAMES,
+        NUM_HP_TRANSFORM=len(configs.HP_TRANSFORM_NAMES),
         # build_func=tune.function(configs.build_func),
     )
 
@@ -64,7 +62,7 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         # default start value of 0
         hparams.add_hparam('use_pba', True)
         hparams.add_hparam('hp_policy',
-                           [0 for _ in range(4 * NUM_HP_TRANSFORM)])
+                           [0 for _ in range(4 * hparams.NUM_HP_TRANSFORM)])
     else:
         raise ValueError('unknown state')
     if configs.dataset_type == 'custom':

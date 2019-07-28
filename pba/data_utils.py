@@ -32,31 +32,7 @@ import numpy as np
 import tensorflow as tf
 from torch.utils.data import DataLoader
 from pba.utils import parse_log_schedule
-import pba.augmentation_transforms_hp as augmentation_transforms_pba
-
-# pylint:disable=logging-format-interpolation
-
-
-def parse_policy(policy_emb, augmentation_transforms):
-    policy = []
-    num_xform = augmentation_transforms.NUM_HP_TRANSFORM
-    xform_names = augmentation_transforms.HP_TRANSFORM_NAMES
-    assert len(policy_emb
-               ) == 2 * num_xform, 'policy was: {}, supposed to be: {}'.format(
-                   len(policy_emb), 2 * num_xform)
-    for i, xform in enumerate(xform_names):
-        policy.append((xform, policy_emb[2 * i] / 10., policy_emb[2 * i + 1]))
-    return policy
-
-
-def shuffle_data(data, labels):
-    """Shuffle data using numpy."""
-    np.random.seed(0)
-    perm = np.arange(len(data))
-    np.random.shuffle(perm)
-    data = data[perm]
-    labels = labels[perm]
-    return data, labels
+from pba.augmentation_transforms_hp import apply_policy
 
 
 class DataSet(object):
@@ -76,11 +52,12 @@ class DataSet(object):
         self.image_size = hparams.size_of_image
         self.num_classes = hparams.num_of_classes
         self.hparams = hparams
-        self.augmentation_transforms = augmentation_transforms_pba
+        self.HP_TRANSFORM_NAMES = hparams.HP_TRANSFORM_NAMES
+        self.NUM_HP_TRANSFORM = hparams.NUM_HP_TRANSFORM
         self.use_pba = hparams.use_pba
         if self.use_pba:
             self.parse_policy(hparams)
-        self.__pba_transform = transforms.Lambda(lambda img: self.__apply_pba(img) if self.use_pba else img)
+        self.__pba_transform = transforms.Lambda(lambda img: self._apply_pba(img) if self.use_pba else img)
         self.__normalize = transforms.Normalize(hparams.mean, hparams.std)
         self.__test_transform = transforms.Compose(
             [
@@ -222,7 +199,7 @@ class DataSet(object):
         self.num_test = len(self.test_loader)
         tf.logging.info('reset data loader!')
 
-    def __apply_pba(self, data):
+    def _apply_pba(self, data):
         """
 
         Args:
@@ -234,10 +211,7 @@ class DataSet(object):
         # apply PBA policy
         if isinstance(self.policy, list):
             # policy schedule
-            img = self.augmentation_transforms.apply_policy(
-                self.policy,
-                data,
-                image_size=self.image_size)
+            img = apply_policy(self.policy, data, image_size=self.image_size)
         else:
             raise ValueError('Unknown policy.')
         return img
@@ -271,13 +245,23 @@ class DataSet(object):
 
         if isinstance(raw_policy, list):
             split = len(raw_policy) // 2
-            self.policy = parse_policy(raw_policy[:split],
-                                       self.augmentation_transforms)
+            self.policy = self._parse_policy(raw_policy[:split])
             self.policy.extend(
-                parse_policy(raw_policy[split:],
-                             self.augmentation_transforms))
+                self._parse_policy(raw_policy[split:]))
             tf.logging.info('using HP Policy, policy: {}'.format(
                 self.policy))
+
+    def _parse_policy(self, policy_emb):
+        """parse list policy"""
+        policy = []
+        num_xform = self.NUM_HP_TRANSFORM
+        xform_names = self.HP_TRANSFORM_NAMES
+        assert len(policy_emb
+                   ) == 2 * num_xform, 'policy was: {}, supposed to be: {}'.format(
+            len(policy_emb), 2 * num_xform)
+        for i, xform in enumerate(xform_names):
+            policy.append((xform, policy_emb[2 * i] / 10., policy_emb[2 * i + 1]))
+        return policy
 
     def reset_policy(self, new_hparams):
         """
