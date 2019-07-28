@@ -184,11 +184,9 @@ class DataSet(object):
                 drop_last=True
             )
         elif self.hparams.dataset_type == 'svhn':
-            tf.logging.info('using svhn config!')
             self.data_root = self.hparams.data_root
             self.__transform = transforms.Compose(
                 [
-                    transforms.Resize((self.image_size, self.image_size)),
                     self.__pba_transform,
                     transforms.RandomHorizontalFlip(),
                     transforms.RandomCrop(size=(self.image_size, self.image_size), padding=self.__padding_size),

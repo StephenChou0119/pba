@@ -7,7 +7,6 @@ import tensorflow as tf
 
 from pba.augmentation_transforms_hp import NUM_HP_TRANSFORM
 from mmcv import Config
-from ray import tune
 
 
 def create_parser():
@@ -19,8 +18,8 @@ def create_parser():
     return config
 
 
-# build_func = create_parser().build_func
-# print('aaaaaa',build_func)
+config = create_parser()
+
 
 def create_hparams(state, configs):  # pylint: disable=invalid-name
     """Creates hyperparameters to pass into Ray config.

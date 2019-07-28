@@ -22,7 +22,7 @@ import inspect
 import random
 import numpy as np
 from PIL import ImageOps, ImageEnhance, ImageFilter, Image
-
+from pba.setup import config
 PARAMETER_MAX = 10  # What is the max 'level' a transform could be predicted
 
 
@@ -203,8 +203,8 @@ smooth = TransformT('Smooth',
 
 
 def _rotate_impl(pil_img, level):
-    """Rotates `pil_img` from -30 to 30 degrees depending on `level`."""
-    degrees = int_parameter(level, 30)
+    """Rotates `pil_img` from -config.rotate_max_degree to config.rotate_max_degree degrees depending on `level`."""
+    degrees = int_parameter(level, config.rotate_max_degree)
     if random.random() > 0.5:
         degrees = -degrees
     return pil_img.rotate(degrees)
@@ -215,9 +215,9 @@ rotate = TransformT('Rotate', _rotate_impl)
 
 def _posterize_impl(pil_img, level):
     """Applies PIL Posterize to `pil_img`."""
-    level = int_parameter(level, 4)
+    level = int_parameter(level, config.posterize_max)
     return ImageOps.posterize(pil_img.convert('RGB'),
-                              4 - level).convert('RGBA')
+                              config.posterize_max - level).convert('RGBA')
 
 
 posterize = TransformT('Posterize', _posterize_impl)
@@ -237,7 +237,7 @@ def _shear_x_impl(pil_img, level, image_size):
   Returns:
     A PIL Image that has had ShearX applied to it.
   """
-    level = float_parameter(level, 0.3)
+    level = float_parameter(level, config.shear_x_max)
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, level, 0, 0, 1, 0))
@@ -260,7 +260,7 @@ def _shear_y_impl(pil_img, level, image_size):
   Returns:
     A PIL Image that has had ShearX applied to it.
   """
-    level = float_parameter(level, 0.3)
+    level = float_parameter(level, config.shear_y_max)
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, 0, level, 1, 0))
@@ -283,7 +283,7 @@ def _translate_x_impl(pil_img, level, image_size):
   Returns:
     A PIL Image that has had TranslateX applied to it.
   """
-    level = int_parameter(level, 10)
+    level = int_parameter(level, config.translate_x_max)
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, level, 0, 1, 0))
@@ -306,7 +306,7 @@ def _translate_y_impl(pil_img, level, image_size):
   Returns:
     A PIL Image that has had TranslateY applied to it.
   """
-    level = int_parameter(level, 10)
+    level = int_parameter(level, config.translate_x_max)
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, 0, 0, 1, level))
@@ -350,7 +350,8 @@ solarize = TransformT('Solarize', _solarize_impl)
 
 def _cutout_pil_impl(pil_img, level, image_size):
     """Apply cutout to pil_img at the specified level."""
-    size = int_parameter(level, 140)
+    cutout_mean = [int(255*x) for x in config.mean]
+    size = int_parameter(level, config.cutout_max_size)
     if size <= 0:
         return pil_img
     img_height, img_width, num_channels = (image_size, image_size, 3)
@@ -359,7 +360,7 @@ def _cutout_pil_impl(pil_img, level, image_size):
     pixels = pil_img.load()  # create the pixel map
     for i in range(upper_coord[0], lower_coord[0]):  # for every col:
         for j in range(upper_coord[1], lower_coord[1]):  # For every row
-            pixels[i, j] = (130, 112, 102, 0)  # set the colour accordingly
+            pixels[i, j] = (cutout_mean[0], cutout_mean[1], cutout_mean[2], 0)  # set the colour accordingly
     return pil_img
 
 
@@ -367,10 +368,10 @@ cutout = TransformT('Cutout', _cutout_pil_impl)
 
 
 def _enhancer_impl(enhancer):
-    """Sets level to be between 0.1 and 1.8 for ImageEnhance transforms of PIL."""
+    """Sets level to be between 0.1 and config.enhance_max for ImageEnhance transforms of PIL."""
 
     def impl(pil_img, level):
-        v = float_parameter(level, 1.8) + .1  # going to 0 just destroys it
+        v = float_parameter(level, config.enhance_max) + .1  # going to 0 just destroys it
         return enhancer(pil_img).enhance(v)
 
     return impl

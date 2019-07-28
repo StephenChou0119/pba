@@ -30,6 +30,8 @@ from pba.augmentation_transforms import NAME_TO_TRANSFORM
 from pba.augmentation_transforms import PARAMETER_MAX
 from pba.augmentation_transforms import _rotate_impl, _posterize_impl, _shear_x_impl, _shear_y_impl, _translate_x_impl, _translate_y_impl, _crop_impl, _solarize_impl, _cutout_pil_impl, _enhancer_impl
 
+from pba.setup import config
+
 
 def apply_policy(policy, img, image_size, verbose=False):
     """Apply the `policy` to the pil `img`.
@@ -48,7 +50,6 @@ def apply_policy(policy, img, image_size, verbose=False):
   """
     count = np.random.choice([0, 1, 2, 3], p=[0.2, 0.3, 0.5, 0.0])
     if count != 0:
-        # pil_img = pil_wrap(img)
         pil_img = img
         policy = copy.copy(policy)
         random.shuffle(policy)
@@ -66,7 +67,6 @@ def apply_policy(policy, img, image_size, verbose=False):
             assert count >= 0
             if count == 0:
                 break
-        # return pil_unwrap(pil_img, image_size)
         pil_img = pil_img.convert('RGB')
         return pil_img
     else:
@@ -138,23 +138,7 @@ contrast = TransformT('Contrast', _enhancer_impl(ImageEnhance.Contrast))
 brightness = TransformT('Brightness', _enhancer_impl(ImageEnhance.Brightness))
 sharpness = TransformT('Sharpness', _enhancer_impl(ImageEnhance.Sharpness))
 
-HP_TRANSFORMS = [
-    auto_contrast,
-    equalize,
-    invert,
-    rotate,
-    posterize,
-    solarize,
-    color,
-    contrast,
-    brightness,
-    sharpness,
-    shear_x,
-    shear_y,
-    translate_x,
-    translate_y,
-    # cutout,
-]
+HP_TRANSFORMS = config.HP_TRANSFORMS
 
 NAME_TO_TRANSFORM = {t.name: t for t in HP_TRANSFORMS}
 HP_TRANSFORM_NAMES = NAME_TO_TRANSFORM.keys()
