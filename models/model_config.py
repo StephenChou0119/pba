@@ -1,4 +1,35 @@
 import tensorflow as tf
+import models.custom_ops as ops
+
+arg_scope = tf.contrib.framework.arg_scope
+
+
+def setup_arg_scopes(is_training):
+    """Sets up the argscopes that will be used when building an image model.
+
+    Args:
+      is_training: Is the model training or not.
+
+    Returns:
+      Arg scopes to be put around the model being constructed.
+    """
+
+    batch_norm_decay = 0.9
+    batch_norm_epsilon = 1e-5
+    batch_norm_params = {
+        # Decay for the moving averages.
+        'decay': batch_norm_decay,
+        # epsilon to prevent 0s in variance.
+        'epsilon': batch_norm_epsilon,
+        'scale': True,
+        # collection containing the moving mean and moving variance.
+        'is_training': is_training,
+    }
+
+    scopes = []
+
+    scopes.append(arg_scope([ops.batch_norm], **batch_norm_params))
+    return scopes
 
 
 def build_mobilenetv2(inputs, num_classes, is_training):
@@ -13,12 +44,9 @@ def build_mobilenetv2(inputs, num_classes, is_training):
 
 def build_efficientnet(inputs, num_classes, is_training):
     from models.efficientnet_builder import build_model
-    if is_training:
-        build_model(inputs,'efficientnet-b0', True,
-                                override_params={'num_classes': num_classes})
-    else:
-        build_model(inputs,'efficientnet-b0', False,
-                                override_params={'num_classes': num_classes})
+    logits,_ = build_model(inputs, 'efficientnet-b0', is_training,
+                override_params={'num_classes': num_classes})
+    return logits
 
 
-build_model=build_mobilenetv2
+build_model=build_efficientnet
