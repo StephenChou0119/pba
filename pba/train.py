@@ -27,10 +27,12 @@ class RayModel(Trainable):
     def _train(self):
         """Runs one epoch of training, and returns current epoch accuracies."""
         tf.logging.info("training for iteration: {}".format(self._iteration))
-        train_acc, val_acc = self.trainer.run_model(self._iteration)
-        test_acc = self.trainer._compute_final_accuracies(self._iteration)  # pylint: disable=protected-access
+        train_acc, train_loss, val_acc, val_loss = self.trainer.run_model(self._iteration)
+        test_acc = self.trainer.get_test_accuracy(self._iteration)  # pylint: disable=protected-access
         return {
+            "val_loss": val_loss,
             "val_acc": val_acc,
+            "train_loss": train_loss,
             "train_acc": train_acc,
             "test_acc": test_acc
         }

@@ -31,7 +31,7 @@ import pba.helper_utils as helper_utils
 # from pba.setup import build_func
 from models.model_config import build_model
 
-def run_epoch_training(session, model, dataset, curr_epoch):
+def train_model(session, model, dataset, curr_epoch):
     """Runs one epoch of training for the model passed in.
 
   Args:
@@ -64,8 +64,8 @@ def run_epoch_training(session, model, dataset, curr_epoch):
 
         train_images, train_labels = dataset.next_batch()
 
-        _, step, preds,cost,_ = session.run(
-            [model.train_op, model.global_step, model.predictions, model.cost, model.apply_op],
+        _, step, preds, cost = session.run(
+            [model.train_op, model.global_step, model.predictions, model.cost],
             feed_dict={
                 model.images: train_images,
                 model.labels: train_labels,
@@ -74,11 +74,7 @@ def run_epoch_training(session, model, dataset, curr_epoch):
         correct += np.sum(
             np.equal(np.argmax(train_labels, 1), np.argmax(preds, 1)))
         count += len(preds)
-    train_accuracy = correct / count
-    print('train cost', np.mean(np.array(cost_epoch)))
-
-    tf.logging.info('Train accuracy: {}'.format(train_accuracy))
-    return train_accuracy
+    return correct / count, np.mean(np.array(cost_epoch))
 
 
 def eval_child_model(session, model, dataset, mode):
@@ -122,8 +118,7 @@ def eval_child_model(session, model, dataset, mode):
         correct += np.sum(
             np.equal(np.argmax(labels, 1), np.argmax(preds, 1)))
         count += len(preds)
-    print('eval cost', np.mean(np.array(cost_epoch)))
-    return correct / count
+    return correct / count, np.mean(np.array(cost_epoch))
 
 
 class Model(object):
@@ -267,7 +262,7 @@ class ModelTrainer(object):
         tf.logging.warning(
             'Loaded child model checkpoint from {}'.format(checkpoint_path))
 
-    def eval_child_model(self, model, dataset, mode):
+    def eval_model(self, model, dataset, mode):
         """Evaluate the child model.
 
         Args:
@@ -281,10 +276,10 @@ class ModelTrainer(object):
         tf.logging.info('Evaluating child model in mode {}'.format(mode))
         while True:
             try:
-                accuracy = eval_child_model(
+                accuracy, loss = eval_child_model(
                     self.session, model, dataset, mode)
                 tf.logging.info(
-                    'Eval child model accuracy: {}'.format(accuracy))
+                    'Eval child model accuracy: {} loss:{}'.format(accuracy, loss))
                 # If epoch trained without raising the below errors, break
                 # from loop.
                 break
@@ -292,7 +287,7 @@ class ModelTrainer(object):
                 tf.logging.info(
                     'Retryable error caught: {}.  Retrying.'.format(e))
 
-        return accuracy
+        return accuracy, loss
 
     @contextlib.contextmanager
     def _new_session(self):
@@ -322,12 +317,12 @@ class ModelTrainer(object):
         self.meval = meval
         self.m.hparams.add_hparam('train_size', len(self.dataset.train_loader.dataset))
 
-    def _run_training_loop(self, curr_epoch):
+    def train_model(self, curr_epoch):
         """Trains the model `m` for one epoch."""
         start_time = time.time()
         while True:
             try:
-                train_accuracy = run_epoch_training(
+                train_accuracy, train_loss = train_model(
                     self.session, self.m, self.dataset, curr_epoch)
                 break
             except (tf.errors.AbortedError, tf.errors.UnavailableError) as e:
@@ -336,13 +331,12 @@ class ModelTrainer(object):
         tf.logging.info('Finished epoch: {}'.format(curr_epoch))
         tf.logging.info('Epoch time(min): {}'.format(
             (time.time() - start_time) / 60.0))
-        return train_accuracy
+        return train_accuracy, train_loss
 
-    def _compute_final_accuracies(self, iteration):
+    def get_test_accuracy(self, iteration):
         """Run once training is finished to compute final test accuracy."""
         if iteration >= self.hparams.num_epochs - 1:
-            test_accuracy = self.eval_child_model(self.meval, self.dataset,
-                                                  'test')
+            test_accuracy = self.eval_model(self.meval, self.dataset, 'test')
         else:
             test_accuracy = 0
         tf.logging.info('Test Accuracy: {}'.format(test_accuracy))
@@ -353,12 +347,12 @@ class ModelTrainer(object):
         # set curr_epoch for load data and apply pba
         self.dataset.curr_epoch = curr_epoch
         self.dataset.reset_dataloader()
-        training_accuracy = self._run_training_loop(curr_epoch)
-        valid_accuracy = self.eval_child_model(self.meval,
-                                                   self.dataset, 'val')
-        tf.logging.info('Train Acc: {}, Valid Acc: {}'.format(
-            training_accuracy, valid_accuracy))
-        return training_accuracy, valid_accuracy
+        training_accuracy, trainning_loss = self.train_model(curr_epoch)
+        valid_accuracy, valid_loss = self.eval_model(self.meval,
+                                                     self.dataset, 'val')
+        tf.logging.info('Train Acc: {:.4f}, Train Loss: {:.4f}, Valid Acc: {:.4f}, Valid Loss: {:.4f}'.format(
+            training_accuracy, trainning_loss, valid_accuracy, valid_loss))
+        return training_accuracy, trainning_loss, valid_accuracy, valid_loss
 
     def reset_config(self, new_hparams):
         self.hparams = new_hparams

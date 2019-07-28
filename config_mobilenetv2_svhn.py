@@ -5,13 +5,13 @@ restore = None  # if not None, tries to restore from given path.
 checkpoint_freq = 50
 cpu = 5  # cpu allocated by Ray for each trial
 gpu = 1  # gpu allocated by Ray for each trial
-epochs = 200  # number of epochs, must > 0
-learning_rate = 0.1
-weight_decay = 0.0005
-batch_size = 4096
-test_batch_size = 4096
+epochs = 500  # number of epochs, must > 0
+learning_rate = 0.05
+weight_decay = 0.005
+batch_size = 128
+test_batch_size = 128
 # num_samples = 16  # number of trials
-num_samples = 1
+num_samples = 16
 # name of directory created in local_dir to store search temp files, checkpoints, policies.
 search_name = 'mobilenetv2_search_svhn_test'
 train_name = 'mobilenetv2_train_svhn_test'
@@ -19,11 +19,11 @@ train_name = 'mobilenetv2_train_svhn_test'
 
 # arguments for train
 # hp_policy = '/data/zwy/hack_pba_tensorflow/schedules/cifar10.txt'
-hp_policy = ''
+hp_policy = None
 hp_policy_epochs = 200  # epochs should be able to divide evenly into hp_policy_epochs
 
 # interval for moving top 25% to last 25%
-perturbation_interval = 4
+perturbation_interval = 3
 
 # dataset
 dataset_type = 'svhn'
