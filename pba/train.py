@@ -71,7 +71,7 @@ def main(_):
         "config": hparams.values(),
         "local_dir": args.local_dir,
         "checkpoint_freq": args.checkpoint_freq,
-        "num_samples": args.num_samples
+        "num_samples": 1
     }
 
     if args.restore:
