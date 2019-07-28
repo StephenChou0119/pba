@@ -7,6 +7,7 @@ from __future__ import print_function
 import ast
 import collections
 import tensorflow as tf
+import json
 
 PbtUpdate = collections.namedtuple('PbtUpdate', [
     'target_trial_name', 'clone_trial_name', 'target_trial_epochs',
@@ -24,8 +25,14 @@ def parse_log(file_path, epochs):
   Returns:
     A list containing the parsed policy of the form: [start epoch, start_epoch_clone, policy], where each element is a tuple of (num_epochs, policy list).
   """
-    raw_policy = open(file_path, "r").readlines()
-    raw_policy = [ast.literal_eval(line) for line in raw_policy]
+    raw_policy_file = open(file_path, "r").readlines()
+    raw_policy = []
+    for line in raw_policy_file:
+        try:
+            raw_policy_line = json.loads(line)
+        except:
+            raw_policy_line = ast.literal_eval(line)
+        raw_policy.append(raw_policy_line)
 
     # Depreciated use case has policy as list instead of dict config.
     for r in raw_policy:
@@ -93,6 +100,6 @@ def parse_log_schedule(file_path, epochs, multiplier=1):
 
 
 if __name__ == "__main__":
-    schedule = parse_log('schedules/rsvhn_16_wrn.txt', 160)
+    schedule = parse_log('/home/sun/zwy/search_results/mobilenetv2_search_cifar10_test/pbt_global.txt', 200)
     for s in schedule:
         print(s)
