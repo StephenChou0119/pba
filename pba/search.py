@@ -73,10 +73,12 @@ def main(_):
 
     pbt = PopulationBasedTraining(
         time_attr="training_iteration",
-        reward_attr="val_acc",
+        metric=configs.metric,
+        mode=configs.mode,
         perturbation_interval=configs.perturbation_interval,
         custom_explore_fn=explore,
-        log_config=True)
+        log_config=True,
+    )
 
     run_experiments(
         {
