@@ -71,26 +71,6 @@ class TransformFunction(object):
         return self.f(pil_img)
 
 
-class TransformT(object):
-    """Each instance of this class represents a specific transform."""
-
-    def __init__(self, name, xform_fn):
-        self.name = name
-        self.xform = xform_fn
-
-    def pil_transformer(self, probability, level, image_size):
-        def return_function(im):
-            if random.random() < probability:
-                if 'image_size' in inspect.getargspec(self.xform).args:
-                    im = self.xform(im, level, image_size)
-                else:
-                    im = self.xform(im, level)
-            return im
-
-        name = self.name + '({:.1f},{})'.format(probability, level)
-        return TransformFunction(return_function, name)
-
-
 def _rotate_impl(pil_img, level):
     """Rotates `pil_img` from -config.rotate_max_degree to config.rotate_max_degree degrees depending on `level`."""
     degrees = int_parameter(level, model_aug_config.rotate_max_degree)
@@ -99,18 +79,11 @@ def _rotate_impl(pil_img, level):
     return pil_img.rotate(degrees)
 
 
-rotate = TransformT('Rotate', _rotate_impl)
-
-
 def _posterize_impl(pil_img, level):
     """Applies PIL Posterize to `pil_img`."""
     level = int_parameter(level, model_aug_config.posterize_max)
     return ImageOps.posterize(pil_img.convert('RGB'),
-                              model_aug_config.posterize_max - level).convert('RGBA')
-
-
-posterize = TransformT('Posterize', _posterize_impl)
-
+                              model_aug_config.posterize_max - level)
 
 def _shear_x_impl(pil_img, level, image_size):
     """Applies PIL ShearX to `pil_img`.
@@ -130,9 +103,6 @@ def _shear_x_impl(pil_img, level, image_size):
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, level, 0, 0, 1, 0))
-
-
-shear_x = TransformT('ShearX', _shear_x_impl)
 
 
 def _shear_y_impl(pil_img, level, image_size):
@@ -155,9 +125,6 @@ def _shear_y_impl(pil_img, level, image_size):
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, 0, level, 1, 0))
 
 
-shear_y = TransformT('ShearY', _shear_y_impl)
-
-
 def _translate_x_impl(pil_img, level, image_size):
     """Applies PIL TranslateX to `pil_img`.
 
@@ -176,9 +143,6 @@ def _translate_x_impl(pil_img, level, image_size):
     if random.random() > 0.5:
         level = -level
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, level, 0, 1, 0))
-
-
-translate_x = TransformT('TranslateX', _translate_x_impl)
 
 
 def _translate_y_impl(pil_img, level, image_size):
@@ -201,18 +165,12 @@ def _translate_y_impl(pil_img, level, image_size):
     return pil_img.transform((image_size, image_size), Image.AFFINE, (1, 0, 0, 0, 1, level))
 
 
-translate_y = TransformT('TranslateY', _translate_y_impl)
-
-
 def _crop_impl(pil_img, level, image_size, interpolation=Image.BILINEAR):
     """Applies a crop to `pil_img` with the size depending on the `level`."""
     cropped = pil_img.crop((level, level, image_size - level,
                             image_size - level))
     resized = cropped.resize((image_size, image_size), interpolation)
     return resized
-
-
-crop_bilinear = TransformT('CropBilinear', _crop_impl)
 
 
 def _solarize_impl(pil_img, level):
@@ -231,15 +189,12 @@ def _solarize_impl(pil_img, level):
   """
     level = int_parameter(level, 256)
     return ImageOps.solarize(pil_img.convert('RGB'),
-                             256 - level).convert('RGBA')
+                             256 - level)
 
 
-solarize = TransformT('Solarize', _solarize_impl)
-
-
-def _cutout_pil_impl(pil_img, level, image_size):
+def _cutout_pil_impl(pil_img, level, image_size, mean):
     """Apply cutout to pil_img at the specified level."""
-    cutout_mean = [int(255*x) for x in model_aug_config.mean]
+    cutout_mean = [int(255*x) for x in mean]
     size = int_parameter(level, model_aug_config.cutout_max_size)
     if size <= 0:
         return pil_img
@@ -251,9 +206,6 @@ def _cutout_pil_impl(pil_img, level, image_size):
         for j in range(upper_coord[1], lower_coord[1]):  # For every row
             pixels[i, j] = (cutout_mean[0], cutout_mean[1], cutout_mean[2], 0)  # set the colour accordingly
     return pil_img
-
-
-cutout = TransformT('Cutout', _cutout_pil_impl)
 
 
 def _enhancer_impl(enhancer):
@@ -273,14 +225,18 @@ class TransformT(object):
         self.name = name
         self.xform = xform_fn
 
-    def pil_transformer(self, probability, level, image_size):
+    def pil_transformer(self, probability, level, image_size, mean):
         """Builds augmentation function which returns resulting image and whether augmentation was applied."""
 
         def return_function(im):
             res = False
             if random.random() < probability:
-                if 'image_size' in inspect.getargspec(self.xform).args:
-                    im = self.xform(im, level, image_size)
+                args = inspect.getargspec(self.xform).args
+                if 'image_size' in args:
+                    if 'mean' in args:
+                        im = self.xform(im, level, image_size, mean)
+                    else:
+                        im = self.xform(im, level, image_size)
                 else:
                     im = self.xform(im, level)
                 res = True
@@ -341,15 +297,15 @@ flip_ud = TransformT(
 # pylint:disable=g-long-lambda
 auto_contrast = TransformT(
     'AutoContrast',
-    lambda pil_img, level: ImageOps.autocontrast(pil_img.convert('RGB')).convert('RGBA')
+    lambda pil_img, level: ImageOps.autocontrast(pil_img.convert('RGB'))
 )
 equalize = TransformT(
     'Equalize',
-    lambda pil_img, level: ImageOps.equalize(pil_img.convert('RGB')).convert('RGBA')
+    lambda pil_img, level: ImageOps.equalize(pil_img.convert('RGB'))
 )
 invert = TransformT(
     'Invert',
-    lambda pil_img, level: ImageOps.invert(pil_img.convert('RGB')).convert('RGBA')
+    lambda pil_img, level: ImageOps.invert(pil_img.convert('RGB'))
 )
 # pylint:enable=g-long-lambda
 blur = TransformT('Blur',
@@ -379,24 +335,22 @@ ALL_TRANSFORMS = [
 NAME_TO_TRANSFORM = {t.name: t for t in ALL_TRANSFORMS}
 
 
-def apply_policy(policy, img, image_size, verbose=False):
-    """Apply the `policy` to the pil `img`.
-
+def apply_policy(policy, pil_img, mean, image_size, verbose=False):
+    """Apply the `policy` to the numpy `img`.
   Args:
     policy: A list of tuples with the form (name, probability, level) where
       `name` is the name of the augmentation operation to apply, `probability`
       is the probability of applying the operation and `level` is what strength
       the operation to apply.
-    img: Numpy image that will have `policy` applied to it.
+    pil_img: Numpy image that will have `policy` applied to it.
+    mean: channel mean of dataset
     image_size: Width and height of image.
     verbose: Whether to print applied augmentations.
-
   Returns:
     The result of applying `policy` to `img`.
   """
     count = np.random.choice([0, 1, 2, 3], p=[0.2, 0.3, 0.5, 0.0])
     if count != 0:
-        pil_img = img
         policy = copy.copy(policy)
         random.shuffle(policy)
         for xform in policy:
@@ -404,8 +358,7 @@ def apply_policy(policy, img, image_size, verbose=False):
             name, probability, level = xform
             assert 0. <= probability <= 1.
             assert 0 <= level <= PARAMETER_MAX
-            xform_fn = NAME_TO_TRANSFORM[name].pil_transformer(
-                probability, level, image_size)
+            xform_fn = NAME_TO_TRANSFORM[name].pil_transformer(probability, level, image_size, mean)
             pil_img, res = xform_fn(pil_img)
             if verbose and res:
                 print("Op: {}, Magnitude: {}, Prob: {}".format(name, level, probability))
@@ -413,7 +366,6 @@ def apply_policy(policy, img, image_size, verbose=False):
             assert count >= 0
             if count == 0:
                 break
-        pil_img = pil_img.convert('RGB')
         return pil_img
     else:
-        return img
+        return pil_img
