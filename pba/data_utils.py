@@ -55,10 +55,12 @@ class DataSet(object):
         self.HP_TRANSFORM_NAMES = hparams.HP_TRANSFORM_NAMES
         self.NUM_HP_TRANSFORM = hparams.NUM_HP_TRANSFORM
         self.use_pba = hparams.use_pba
+        self.mean, self.std = hparams.mean, hparams.std
+        print('mean:', self.mean, 'std:', self.std)
         if self.use_pba:
             self.parse_policy(hparams)
         self.__pba_transform = transforms.Lambda(lambda img: self._apply_pba(img) if self.use_pba else img)
-        self.__normalize = transforms.Normalize(hparams.mean, hparams.std)
+        self.__normalize = transforms.Normalize(self.mean, self.std)
         self.__test_transform = transforms.Compose(
             [
                 transforms.Resize((self.image_size, self.image_size)),
@@ -208,22 +210,32 @@ class DataSet(object):
         Returns:
             pillow image object
         """
-        # apply PBA policy
-        if isinstance(self.policy, list):
+        # apply PBA policy)
+        if isinstance(self.policy[0], list):
+            # single policy
+            final_img = apply_policy(
+                self.policy[self.curr_epoch],
+                data,
+                self.mean,
+                image_size=self.image_size)
+        elif isinstance(self.policy, list):
             # policy schedule
-            img = apply_policy(self.policy, data, image_size=self.image_size)
+            final_img = apply_policy(
+                self.policy,
+                data,
+                self.mean,
+                image_size=self.image_size)
         else:
             raise ValueError('Unknown policy.')
-        return img
+        return final_img
 
     def parse_policy(self, hparams):
         """Parses policy schedule from input, which can be a list, list of lists, text file, or pickled list.
-
         If list is not nested, then uses the same policy for all epochs.
-
         Args:
         hparams: tf.hparams object.
         """
+        # Parse policy
         if isinstance(hparams.hp_policy,
                       str) and hparams.hp_policy.endswith('.txt'):
             if hparams.num_epochs % hparams.hp_policy_epochs != 0:
@@ -241,9 +253,18 @@ class DataSet(object):
                 multiplier=float(hparams.num_epochs) /
                 hparams.hp_policy_epochs)
         else:
-            raw_policy = hparams.hp_policy
-
-        if isinstance(raw_policy, list):
+            raise ValueError('hp_policy must be txt or None')
+        if isinstance(raw_policy[0], list):
+            self.policy = []
+            split = len(raw_policy[0]) // 2
+            for pol in raw_policy:
+                cur_pol = self._parse_policy(pol[:split])
+                cur_pol.extend(
+                    self._parse_policy(pol[split:]))
+                self.policy.append(cur_pol)
+            tf.logging.info('using HP policy schedule, last: {}'.format(
+                self.policy[-1]))
+        elif isinstance(raw_policy, list):
             split = len(raw_policy) // 2
             self.policy = self._parse_policy(raw_policy[:split])
             self.policy.extend(

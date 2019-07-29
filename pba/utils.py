@@ -100,6 +100,7 @@ def parse_log_schedule(file_path, epochs, multiplier=1):
 
 
 if __name__ == "__main__":
-    schedule = parse_log('/home/sun/zwy/search_results/mobilenetv2_search_cifar10_test/pbt_global.txt', 200)
+    schedule = parse_log_schedule('/home/sun/zwy/pba_tensorflow/schedules/svhn200_efficientnet.txt', 1800)
+    print(len(schedule))
     for s in schedule:
         print(s)

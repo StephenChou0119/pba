@@ -59,5 +59,3 @@ shear_y_max = 0.3
 translate_x_max = 10
 translate_y_max = 10
 cutout_max_size = 20
-mean = [0.43090966, 0.4302428, 0.44634357]  # mean of dataset
-std = [0.19652855, 0.19832038, 0.19942076]  # std of dataset
