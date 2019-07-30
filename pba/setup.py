@@ -44,6 +44,14 @@ def create_hparams(state, configs):  # pylint: disable=invalid-name
         padding_size=configs.padding_size,
         HP_TRANSFORM_NAMES=configs.HP_TRANSFORM_NAMES,
         NUM_HP_TRANSFORM=len(configs.HP_TRANSFORM_NAMES),
+        rotate_max_degree=configs.rotate_max_degree,
+        posterize_max=configs.posterize_max,
+        enhance_max=configs.enhance_max,
+        shear_x_max=configs.shear_x_max,
+        shear_y_max=configs.shear_y_max,
+        translate_x_max=configs.translate_x_max,
+        translate_y_max=configs.translate_y_max,
+        cutout_max_size=configs.cutout_max_size
         # build_func=tune.function(configs.build_func),
     )
 

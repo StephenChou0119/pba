@@ -32,6 +32,14 @@ HP_TRANSFORM_NAMES = [
     'Cutout',
 ]
 
+rotate_max_degree=30
+posterize_max=4
+enhance_max=1.8
+shear_x_max=0.3
+shear_y_max=0.3
+translate_x_max=10
+translate_y_max=10
+cutout_max_size=20
 
 # arguments for search
 num_samples = 16  # number of trials

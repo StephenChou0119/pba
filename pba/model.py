@@ -28,7 +28,7 @@ import tensorflow as tf
 
 import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
-from model_aug_config import build_model
+from models.model_config import build_model
 
 
 def train_model(session, model, dataset, curr_epoch):
