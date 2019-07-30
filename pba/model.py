@@ -28,8 +28,8 @@ import tensorflow as tf
 
 import pba.data_utils as data_utils
 import pba.helper_utils as helper_utils
-# from pba.setup import build_func
 from model_aug_config import build_model
+
 
 def train_model(session, model, dataset, curr_epoch):
     """Runs one epoch of training for the model passed in.

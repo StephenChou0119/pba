@@ -252,8 +252,11 @@ class DataSet(object):
                 epochs=hparams.hp_policy_epochs,
                 multiplier=float(hparams.num_epochs) /
                 hparams.hp_policy_epochs)
+        elif isinstance(hparams.hp_policy, list):
+            # support list of hp_policy for search stage
+            raw_policy = hparams.hp_policy
         else:
-            raise ValueError('hp_policy must be txt or None')
+            raise ValueError('hp_policy must be txt or None during training!')
         if isinstance(raw_policy[0], list):
             self.policy = []
             split = len(raw_policy[0]) // 2

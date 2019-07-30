@@ -26,7 +26,8 @@ def setup_loss(logits, labels):
     """Returns the cross entropy for the given `logits` and `labels`."""
     predictions = tf.nn.softmax(logits)
     cost = tf.losses.softmax_cross_entropy(onehot_labels=labels,
-                                           logits=logits)
+                                           logits=logits,
+                                           )
     return predictions, cost
 
 
