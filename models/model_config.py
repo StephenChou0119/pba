@@ -12,6 +12,16 @@ def build_mobilenetv2(inputs, num_classes, is_training):
 
 
 def build_efficientnet(inputs, num_classes, is_training):
+    """
+
+    Args:
+        inputs: tf.Tensor
+        num_classes: int
+        is_training: bool
+
+    Returns:
+        logits
+    """
     from models.efficientnet_builder import build_model
     logits,_ = build_model(inputs, 'efficientnet-b0', is_training,
                 override_params={'num_classes': num_classes})

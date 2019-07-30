@@ -111,7 +111,7 @@ class DataSet(object):
         Args:
             rotate_max_degree: max value of rotate, rotate range from [-max,max]
             posterize_max: max value of posterize, posterize range from [0, max]
-            enhance_max: max value of enhancements(color contrast brightness sharpness)
+            enhance_max: max value of enhancements(color contrast brightness sharpness), enchance range from [0.1, max+0.1]
             shear_x_max: max value of shear_x, shear_x range from [-max, max]
             shear_y_max: max value of shear_y, shear_y range from [-max, max]
             translate_x_max: max value of translate_x, translate_x range from [-max, max]
