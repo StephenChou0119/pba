@@ -6,6 +6,8 @@
 增加val_loss指标  
 支持多线程载入和处理数据，解决cpu单线程执行Population Based Augmentation的性能瓶颈  
 无需将所有数据载入内存，解决数据集较大时程序内存不足的问题  
+## todo
+重构pytorch数据增强为nvidia dali实现
 ## 安装和配置环境  
 pip install -r requirements.txt  
 ## 使用方法  
