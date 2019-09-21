@@ -61,8 +61,8 @@ num_classes = 2
 ```
 ### 执行搜索或训练  
 ```
-python -m pba.train configs/efficientnet_train_jdb_sensetime.py
-python -m pba.search configs/efficientnet_train_jdb_sensetime.py
+python -m pba.train configs/config_custom_demo.py
+python -m pba.search configs/config_custom_demo.py
 ```
 搜索的epoch数可以小于训练的epoch数，但应可以被其整除。  
 
