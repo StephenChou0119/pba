@@ -1,13 +1,11 @@
-##参考文献：Population Based Augmentation: Efficient Learning of Augmentation Policy Schedules arXiv:1905.05393
-##项目目标
-自动搜索数据增强，改善hack数据集数据较少的问题
-##与开源代码有什么不同？
-支持自定义模型
-支持自定义数据集
-支持自定义搜索空间
-增加val_loss指标
-支持多线程载入和处理数据，解决cpu单线程执行Population Based Augmentation的性能瓶颈
-无需将所有数据载入内存，解决数据集较大时程序内存不足的问题
+##A Refactored Version Of Population Based Augmentation
+##特征
+支持自定义模型  
+支持自定义数据集  
+支持自定义搜索空间  
+增加val_loss指标  
+支持多线程载入和处理数据，解决cpu单线程执行Population Based Augmentation的性能瓶颈  
+无需将所有数据载入内存，解决数据集较大时程序内存不足的问题  
 ##安装和配置环境
 pip install -r requirements.txt
 ##使用方法

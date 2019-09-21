@@ -10,8 +10,8 @@ batch_size = 512
 test_batch_size = 512
 
 # name of directory created in local_dir to store search temp files, checkpoints, policies.
-search_name = 'efficientnet_search_jdb_sensetime'
-train_name = 'efficientnet_train_jdb_sensetime_no_aug'
+search_name = 'efficientnet_search_jdb_sensetime_test'
+train_name = 'efficientnet_train_jdb_sensetime_no_aug_test'
 
 # search space
 HP_TRANSFORM_NAMES = [
